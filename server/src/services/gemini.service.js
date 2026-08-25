@@ -3,11 +3,13 @@ const { GoogleGenAI } = require("@google/genai");
 const apiKey = process.env.GEMINI_API_KEY;
 
 if (!apiKey) {
-  throw new Error("GEMINI_API_KEY is missing in .env file");
+  throw new Error(
+    "GEMINI_API_KEY is missing in .env file"
+  );
 }
 
 const ai = new GoogleGenAI({
-  apiKey,
+  apiKey: apiKey,
 });
 
 /*
@@ -81,126 +83,6 @@ Important rules:
 
 /*
 ============================================================
-  SLEEP HELPER
-============================================================
-*/
-
-const sleep = (ms) =>
-  new Promise((resolve) => setTimeout(resolve, ms));
-
-/*
-============================================================
-  ERROR DETAIL EXTRACTOR
-  (Gemini SDK errors nest the real reason in different
-  places depending on the failure type, so we pull out
-  everything useful in one place for logging.)
-============================================================
-*/
-
-const extractErrorDetails = (error) => {
-  return {
-    message: error?.message || String(error),
-    status: error?.status ?? error?.code ?? null,
-    statusText: error?.statusText || null,
-    details:
-      error?.errorDetails ||
-      error?.response?.data ||
-      error?.response?.body ||
-      null,
-  };
-};
-
-/*
-============================================================
-  GENERATE WITH RETRY
-============================================================
-*/
-
-const generateWithRetry = async (
-  contents,
-  maxRetries = 3
-) => {
-  for (let attempt = 0; attempt <= maxRetries; attempt++) {
-    try {
-      const response =
-        await ai.models.generateContent({
-          model: "gemini-3.6-flash",
-
-          contents,
-
-          config: {
-            systemInstruction: SYSTEM_INSTRUCTION,
-
-            // NOTE: temperature / topP / topK are deprecated
-            // and ignored by gemini-3.6-flash and other
-            // Gemini 3.x models. Removed to avoid sending
-            // params the model no longer honors (and to
-            // rule it out as a source of 400 errors).
-
-            maxOutputTokens: 500,
-          },
-        });
-
-      return response;
-    } catch (error) {
-      const { message, status, statusText, details } =
-        extractErrorDetails(error);
-
-      console.error(
-        `Gemini API attempt ${attempt + 1} failed:`,
-        JSON.stringify(
-          { status, statusText, message, details },
-          null,
-          2
-        )
-      );
-
-      /*
-      ========================================================
-        RETRY ONLY TEMPORARY ERRORS
-      ========================================================
-      */
-
-      if (
-        status !== 503 &&
-        status !== 429
-      ) {
-        throw error;
-      }
-
-      /*
-      ========================================================
-        LAST ATTEMPT
-      ========================================================
-      */
-
-      if (attempt === maxRetries) {
-        throw error;
-      }
-
-      /*
-      ========================================================
-        EXPONENTIAL BACKOFF
-        1s → 2s → 4s
-      ========================================================
-      */
-
-      const delay =
-        1000 * Math.pow(2, attempt);
-
-      console.log(
-        `Retrying Gemini in ${
-          delay / 1000
-        } seconds...`
-      );
-
-      await sleep(delay);
-    }
-  }
-};
-
-/*
-============================================================
   GENERATE AI RESPONSE
 ============================================================
 */
@@ -220,10 +102,6 @@ const generateAIResponse = async (
 
     if (Array.isArray(history)) {
       history.forEach((item) => {
-        /*
-        Skip invalid messages
-        */
-
         if (
           !item ||
           !item.role ||
@@ -232,19 +110,13 @@ const generateAIResponse = async (
           return;
         }
 
-        /*
-        Convert our database role
-        to Gemini role
-        */
-
         const role =
           item.role === "assistant"
             ? "model"
             : "user";
 
         contents.push({
-          role,
-
+          role: role,
           parts: [
             {
               text: String(item.text),
@@ -260,18 +132,11 @@ const generateAIResponse = async (
     ==========================================================
     */
 
-    if (!message || !String(message).trim()) {
-      throw new Error(
-        "User message is required"
-      );
-    }
-
     contents.push({
       role: "user",
-
       parts: [
         {
-          text: String(message).trim(),
+          text: message,
         },
       ],
     });
@@ -283,15 +148,22 @@ const generateAIResponse = async (
     */
 
     const response =
-      await generateWithRetry(contents);
+      await ai.models.generateContent({
+        model: "gemini-3-flash-preview",
 
-    /*
-    ==========================================================
-      GET RESPONSE TEXT
-    ==========================================================
-    */
+        contents: contents,
 
-    const text = response?.text;
+        config: {
+          systemInstruction:
+            SYSTEM_INSTRUCTION,
+
+          temperature: 0.7,
+
+          maxOutputTokens: 500,
+        },
+      });
+
+    const text = response.text;
 
     if (!text) {
       throw new Error(
@@ -299,41 +171,18 @@ const generateAIResponse = async (
       );
     }
 
-    /*
-    ==========================================================
-      RETURN CLEAN RESPONSE
-    ==========================================================
-    */
-
     return text.trim();
-
   } catch (error) {
-    const { message, status, statusText, details } =
-      extractErrorDetails(error);
-
     console.error(
       "Gemini Service Error:",
-      JSON.stringify(
-        { status, statusText, message, details },
-        null,
-        2
-      )
+      error
     );
 
-    // Bubble up the real reason instead of a fully generic
-    // message, so it's visible in Vercel logs / API response
-    // without needing to dig through nested error objects.
     throw new Error(
-      `Unable to generate AI response: ${message}`
+      "Unable to generate AI response"
     );
   }
 };
-
-/*
-============================================================
-  EXPORT
-============================================================
-*/
 
 module.exports = {
   generateAIResponse,
