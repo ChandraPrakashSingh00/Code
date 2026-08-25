@@ -3,13 +3,11 @@ const { GoogleGenAI } = require("@google/genai");
 const apiKey = process.env.GEMINI_API_KEY;
 
 if (!apiKey) {
-  throw new Error(
-    "GEMINI_API_KEY is missing in .env file"
-  );
+  throw new Error("GEMINI_API_KEY is missing in .env file");
 }
 
 const ai = new GoogleGenAI({
-  apiKey: apiKey,
+  apiKey,
 });
 
 /*
@@ -83,6 +81,96 @@ Important rules:
 
 /*
 ============================================================
+  SLEEP HELPER
+============================================================
+*/
+
+const sleep = (ms) =>
+  new Promise((resolve) => setTimeout(resolve, ms));
+
+/*
+============================================================
+  GENERATE WITH RETRY
+============================================================
+*/
+
+const generateWithRetry = async (
+  contents,
+  maxRetries = 3
+) => {
+  for (let attempt = 0; attempt <= maxRetries; attempt++) {
+    try {
+      const response =
+        await ai.models.generateContent({
+          model: "gemini-3.6-flash",
+
+          contents,
+
+          config: {
+            systemInstruction: SYSTEM_INSTRUCTION,
+
+            temperature: 0.7,
+
+            maxOutputTokens: 500,
+          },
+        });
+
+      return response;
+    } catch (error) {
+      const status = error?.status;
+
+      console.error(
+        `Gemini API attempt ${attempt + 1} failed:`,
+        status,
+        error?.message || error
+      );
+
+      /*
+      ========================================================
+        RETRY ONLY TEMPORARY ERRORS
+      ========================================================
+      */
+
+      if (
+        status !== 503 &&
+        status !== 429
+      ) {
+        throw error;
+      }
+
+      /*
+      ========================================================
+        LAST ATTEMPT
+      ========================================================
+      */
+
+      if (attempt === maxRetries) {
+        throw error;
+      }
+
+      /*
+      ========================================================
+        EXPONENTIAL BACKOFF
+        1s → 2s → 4s
+      ========================================================
+      */
+
+      const delay =
+        1000 * Math.pow(2, attempt);
+
+      console.log(
+        `Retrying Gemini in ${
+          delay / 1000
+        } seconds...`
+      );
+
+      await sleep(delay);
+    }
+  }
+};
+
+/*
+============================================================
   GENERATE AI RESPONSE
 ============================================================
 */
@@ -102,6 +190,10 @@ const generateAIResponse = async (
 
     if (Array.isArray(history)) {
       history.forEach((item) => {
+        /*
+        Skip invalid messages
+        */
+
         if (
           !item ||
           !item.role ||
@@ -110,13 +202,19 @@ const generateAIResponse = async (
           return;
         }
 
+        /*
+        Convert our database role
+        to Gemini role
+        */
+
         const role =
           item.role === "assistant"
             ? "model"
             : "user";
 
         contents.push({
-          role: role,
+          role,
+
           parts: [
             {
               text: String(item.text),
@@ -132,11 +230,18 @@ const generateAIResponse = async (
     ==========================================================
     */
 
+    if (!message || !String(message).trim()) {
+      throw new Error(
+        "User message is required"
+      );
+    }
+
     contents.push({
       role: "user",
+
       parts: [
         {
-          text: message,
+          text: String(message).trim(),
         },
       ],
     });
@@ -148,22 +253,15 @@ const generateAIResponse = async (
     */
 
     const response =
-      await ai.models.generateContent({
-        model: "gemini-3-flash-preview",
+      await generateWithRetry(contents);
 
-        contents: contents,
+    /*
+    ==========================================================
+      GET RESPONSE TEXT
+    ==========================================================
+    */
 
-        config: {
-          systemInstruction:
-            SYSTEM_INSTRUCTION,
-
-          temperature: 0.7,
-
-          maxOutputTokens: 500,
-        },
-      });
-
-    const text = response.text;
+    const text = response?.text;
 
     if (!text) {
       throw new Error(
@@ -171,7 +269,14 @@ const generateAIResponse = async (
       );
     }
 
+    /*
+    ==========================================================
+      RETURN CLEAN RESPONSE
+    ==========================================================
+    */
+
     return text.trim();
+
   } catch (error) {
     console.error(
       "Gemini Service Error:",
@@ -183,6 +288,12 @@ const generateAIResponse = async (
     );
   }
 };
+
+/*
+============================================================
+  EXPORT
+============================================================
+*/
 
 module.exports = {
   generateAIResponse,
