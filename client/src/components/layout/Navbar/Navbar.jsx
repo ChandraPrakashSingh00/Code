@@ -217,7 +217,7 @@ function Navbar() {
           ===================================================== */}
 
           <Link
-            to="/admin/login"
+            to="/"
             onClick={handleLogoClick}
             className="
               group
