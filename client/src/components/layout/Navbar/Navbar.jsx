@@ -3,12 +3,10 @@ import React, {
   useRef,
   useState,
 } from "react";
-
 import {
   Link,
   useNavigate,
 } from "react-router-dom";
-
 import {
   ArrowRight,
   Menu,
@@ -22,29 +20,35 @@ function Navbar() {
 
   /*
   ============================================================
-     SECRET ADMIN LOGIN - LOGO 5 TAP
+    SECRET ADMIN LOGIN - 5 CLICK / TAP
   ============================================================
   */
 
-  const tapCount = useRef(0);
-  const tapTimer = useRef(null);
+  const tapCountRef = useRef(0);
+  const tapTimerRef = useRef(null);
 
-  const handleLogoTap = (event) => {
-    tapCount.current += 1;
+  const handleLogoClick = (event) => {
+    tapCountRef.current += 1;
+
+    console.log(
+      "Logo click count:",
+      tapCountRef.current
+    );
 
     /*
     ----------------------------------------------------------
-      5 TAPS = ADMIN LOGIN
+      5 CLICKS = ADMIN LOGIN
     ----------------------------------------------------------
     */
 
-    if (tapCount.current >= 5) {
+    if (tapCountRef.current >= 5) {
       event.preventDefault();
 
-      tapCount.current = 0;
+      tapCountRef.current = 0;
 
-      if (tapTimer.current) {
-        clearTimeout(tapTimer.current);
+      if (tapTimerRef.current) {
+        clearTimeout(tapTimerRef.current);
+        tapTimerRef.current = null;
       }
 
       setMobileOpen(false);
@@ -56,17 +60,31 @@ function Navbar() {
 
     /*
     ----------------------------------------------------------
-      RESET TAP COUNT AFTER 3 SECONDS
+      RESET AFTER 3 SECONDS
     ----------------------------------------------------------
     */
 
-    if (tapTimer.current) {
-      clearTimeout(tapTimer.current);
+    if (tapTimerRef.current) {
+      clearTimeout(tapTimerRef.current);
     }
 
-    tapTimer.current = setTimeout(() => {
-      tapCount.current = 0;
+    tapTimerRef.current = setTimeout(() => {
+      tapCountRef.current = 0;
+      tapTimerRef.current = null;
     }, 3000);
+
+    /*
+    IMPORTANT:
+    Do NOT preventDefault here.
+
+    Therefore:
+    1 click = normal "/" navigation
+    2 click = normal "/" navigation
+    3 click = normal "/" navigation
+    4 click = normal "/" navigation
+
+    Only 5th click is intercepted.
+    */
   };
 
   const navItems = [
@@ -94,7 +112,10 @@ function Navbar() {
     window.addEventListener("resize", handleResize);
 
     return () => {
-      window.removeEventListener("resize", handleResize);
+      window.removeEventListener(
+        "resize",
+        handleResize
+      );
     };
   }, []);
 
@@ -109,7 +130,10 @@ function Navbar() {
       }
     };
 
-    document.addEventListener("keydown", handleEscape);
+    document.addEventListener(
+      "keydown",
+      handleEscape
+    );
 
     return () => {
       document.removeEventListener(
@@ -136,13 +160,13 @@ function Navbar() {
   }, [mobileOpen]);
 
   /* ============================================================
-     CLEANUP SECRET TAP TIMER
+     CLEANUP TAP TIMER
   ============================================================ */
 
   useEffect(() => {
     return () => {
-      if (tapTimer.current) {
-        clearTimeout(tapTimer.current);
+      if (tapTimerRef.current) {
+        clearTimeout(tapTimerRef.current);
       }
     };
   }, []);
@@ -173,7 +197,6 @@ function Navbar() {
             border-b
             border-[#191b1f]/10
             bg-white
-
             px-4
 
             sm:h-[64px]
@@ -195,7 +218,7 @@ function Navbar() {
 
           <Link
             to="/admin/login"
-            onClick={handleLogoTap}
+            onClick={handleLogoClick}
             className="
               group
               flex
@@ -346,7 +369,9 @@ function Navbar() {
           <button
             type="button"
             onClick={() =>
-              setMobileOpen((prev) => !prev)
+              setMobileOpen(
+                (prev) => !prev
+              )
             }
             aria-label={
               mobileOpen
