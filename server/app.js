@@ -39,6 +39,10 @@ app.disable("x-powered-by");
 
 connectDB();
 
+
+app.use(helmet());
+app.disable("x-powered-by");
+
 app.use(
   cors({
     origin: process.env.CLIENT_URL,
