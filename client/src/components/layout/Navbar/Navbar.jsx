@@ -1,9 +1,73 @@
-import React, { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
-import { ArrowRight, Menu, X } from "lucide-react";
+import React, {
+  useEffect,
+  useRef,
+  useState,
+} from "react";
+
+import {
+  Link,
+  useNavigate,
+} from "react-router-dom";
+
+import {
+  ArrowRight,
+  Menu,
+  X,
+} from "lucide-react";
 
 function Navbar() {
   const [mobileOpen, setMobileOpen] = useState(false);
+
+  const navigate = useNavigate();
+
+  /*
+  ============================================================
+     SECRET ADMIN LOGIN - LOGO 5 TAP
+  ============================================================
+  */
+
+  const tapCount = useRef(0);
+  const tapTimer = useRef(null);
+
+  const handleLogoTap = (event) => {
+    tapCount.current += 1;
+
+    /*
+    ----------------------------------------------------------
+      5 TAPS = ADMIN LOGIN
+    ----------------------------------------------------------
+    */
+
+    if (tapCount.current >= 5) {
+      event.preventDefault();
+
+      tapCount.current = 0;
+
+      if (tapTimer.current) {
+        clearTimeout(tapTimer.current);
+      }
+
+      setMobileOpen(false);
+
+      navigate("/admin-login");
+
+      return;
+    }
+
+    /*
+    ----------------------------------------------------------
+      RESET TAP COUNT AFTER 3 SECONDS
+    ----------------------------------------------------------
+    */
+
+    if (tapTimer.current) {
+      clearTimeout(tapTimer.current);
+    }
+
+    tapTimer.current = setTimeout(() => {
+      tapCount.current = 0;
+    }, 3000);
+  };
 
   const navItems = [
     { name: "Home", href: "/" },
@@ -48,7 +112,10 @@ function Navbar() {
     document.addEventListener("keydown", handleEscape);
 
     return () => {
-      document.removeEventListener("keydown", handleEscape);
+      document.removeEventListener(
+        "keydown",
+        handleEscape
+      );
     };
   }, []);
 
@@ -67,6 +134,18 @@ function Navbar() {
       document.body.style.overflow = "";
     };
   }, [mobileOpen]);
+
+  /* ============================================================
+     CLEANUP SECRET TAP TIMER
+  ============================================================ */
+
+  useEffect(() => {
+    return () => {
+      if (tapTimer.current) {
+        clearTimeout(tapTimer.current);
+      }
+    };
+  }, []);
 
   /* ============================================================
      CLOSE MOBILE MENU
@@ -116,7 +195,7 @@ function Navbar() {
 
           <Link
             to="/"
-            onClick={closeMobileMenu}
+            onClick={handleLogoTap}
             className="
               group
               flex
@@ -140,6 +219,7 @@ function Navbar() {
                 h-auto
                 w-[135px]
                 max-w-none
+                cursor-pointer
                 object-contain
                 transition-transform
                 duration-300
@@ -265,7 +345,9 @@ function Navbar() {
 
           <button
             type="button"
-            onClick={() => setMobileOpen((prev) => !prev)}
+            onClick={() =>
+              setMobileOpen((prev) => !prev)
+            }
             aria-label={
               mobileOpen
                 ? "Close navigation"
