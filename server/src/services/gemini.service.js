@@ -90,6 +90,28 @@ const sleep = (ms) =>
 
 /*
 ============================================================
+  ERROR DETAIL EXTRACTOR
+  (Gemini SDK errors nest the real reason in different
+  places depending on the failure type, so we pull out
+  everything useful in one place for logging.)
+============================================================
+*/
+
+const extractErrorDetails = (error) => {
+  return {
+    message: error?.message || String(error),
+    status: error?.status ?? error?.code ?? null,
+    statusText: error?.statusText || null,
+    details:
+      error?.errorDetails ||
+      error?.response?.data ||
+      error?.response?.body ||
+      null,
+  };
+};
+
+/*
+============================================================
   GENERATE WITH RETRY
 ============================================================
 */
@@ -109,7 +131,11 @@ const generateWithRetry = async (
           config: {
             systemInstruction: SYSTEM_INSTRUCTION,
 
-            temperature: 0.7,
+            // NOTE: temperature / topP / topK are deprecated
+            // and ignored by gemini-3.6-flash and other
+            // Gemini 3.x models. Removed to avoid sending
+            // params the model no longer honors (and to
+            // rule it out as a source of 400 errors).
 
             maxOutputTokens: 500,
           },
@@ -117,12 +143,16 @@ const generateWithRetry = async (
 
       return response;
     } catch (error) {
-      const status = error?.status;
+      const { message, status, statusText, details } =
+        extractErrorDetails(error);
 
       console.error(
         `Gemini API attempt ${attempt + 1} failed:`,
-        status,
-        error?.message || error
+        JSON.stringify(
+          { status, statusText, message, details },
+          null,
+          2
+        )
       );
 
       /*
@@ -278,13 +308,23 @@ const generateAIResponse = async (
     return text.trim();
 
   } catch (error) {
+    const { message, status, statusText, details } =
+      extractErrorDetails(error);
+
     console.error(
       "Gemini Service Error:",
-      error
+      JSON.stringify(
+        { status, statusText, message, details },
+        null,
+        2
+      )
     );
 
+    // Bubble up the real reason instead of a fully generic
+    // message, so it's visible in Vercel logs / API response
+    // without needing to dig through nested error objects.
     throw new Error(
-      "Unable to generate AI response"
+      `Unable to generate AI response: ${message}`
     );
   }
 };
