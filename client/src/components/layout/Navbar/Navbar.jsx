@@ -53,7 +53,7 @@ function Navbar() {
 
       setMobileOpen(false);
 
-      navigate("/admin-login");
+      navigate("/admin/login");
 
       return;
     }
