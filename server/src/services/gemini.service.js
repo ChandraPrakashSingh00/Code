@@ -107,7 +107,7 @@ const generateAIResponse = async (message, history = []) => {
 
     /*
     ==========================================================
-      ADD PREVIOUS CONVERSATION
+      ADD CHAT HISTORY
     ==========================================================
     */
 
@@ -132,7 +132,7 @@ const generateAIResponse = async (message, history = []) => {
           role,
           parts: [
             {
-              text: item.text,
+              text: item.text.trim(),
             },
           ],
         });
@@ -156,9 +156,12 @@ const generateAIResponse = async (message, history = []) => {
 
     /*
     ==========================================================
-      CALL GEMINI
+      GEMINI API REQUEST
     ==========================================================
     */
+
+    console.log("Calling Gemini API...");
+    console.log("Model: gemini-2.5-flash");
 
     const response = await ai.models.generateContent({
       model: "gemini-2.5-flash",
@@ -167,65 +170,95 @@ const generateAIResponse = async (message, history = []) => {
 
       config: {
         systemInstruction: SYSTEM_INSTRUCTION,
-
         temperature: 0.7,
-
         maxOutputTokens: 500,
       },
     });
 
     /*
     ==========================================================
-      GET RESPONSE TEXT
+      EXTRACT RESPONSE
     ==========================================================
     */
 
     const text = response?.text;
 
     if (!text || typeof text !== "string") {
+      console.error("Gemini returned empty response");
+
       throw new Error("Gemini returned an empty response");
     }
+
+    console.log("Gemini response generated successfully");
 
     return text.trim();
   } catch (error) {
     /*
     ==========================================================
-      DETAILED SERVER LOG
-      Actual Gemini error will be visible in Vercel logs.
+      DETAILED GEMINI ERROR LOGGING
     ==========================================================
     */
 
     console.error("========================================");
-    console.error("Gemini Service Error");
+    console.error("        GEMINI SERVICE ERROR");
     console.error("========================================");
 
     console.error("Message:", error?.message);
+    console.error("Name:", error?.name);
+    console.error("Code:", error?.code);
+    console.error("Status:", error?.status);
+    console.error("Status Code:", error?.statusCode);
+    console.error("Cause:", error?.cause);
 
-    if (error?.status) {
-      console.error("Status:", error.status);
-    }
-
-    if (error?.code) {
-      console.error("Code:", error.code);
-    }
+    /*
+    ----------------------------------------------------------
+      Try to print API response if available
+    ----------------------------------------------------------
+    */
 
     if (error?.response) {
       console.error("Response:", error.response);
     }
 
-    console.error("Full Error:", error);
+    /*
+    ----------------------------------------------------------
+      Print complete error safely
+    ----------------------------------------------------------
+    */
+
+    try {
+      console.error(
+        "Full Error:",
+        JSON.stringify(
+          error,
+          Object.getOwnPropertyNames(error),
+          2
+        )
+      );
+    } catch (jsonError) {
+      console.error(
+        "Could not stringify error:",
+        jsonError?.message
+      );
+    }
 
     console.error("========================================");
 
     /*
     ==========================================================
-      KEEP API RESPONSE SAFE
+      SAFE ERROR FOR CONTROLLER
     ==========================================================
     */
 
     throw new Error("Unable to generate AI response");
   }
 };
+
+/*
+============================================================
+  EXPORT
+============================================================
+*/
 
 module.exports = {
   generateAIResponse,
