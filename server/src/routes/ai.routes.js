@@ -1,0 +1,20 @@
+const express = require("express");
+
+const {
+  chatWithAI,
+} = require("../controllers/ai.controller");
+
+const router = express.Router();
+
+/*
+============================================================
+  AI CHAT
+============================================================
+*/
+
+router.post(
+  "/chat",
+  chatWithAI
+);
+
+module.exports = router;
