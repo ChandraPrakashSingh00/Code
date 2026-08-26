@@ -14,159 +14,67 @@ const {
   VERIFY_BASE_URL,
 } = require("../config/company");
 
-const {
-  calculateEndDate,
-} = require("../utils/durationHelper");
+// Shared date calculation logic
+const { calculateEndDate } = require("../utils/DurationHelper");
 
 /*
 ============================================================
-  CERTIFICATE SERVICE
-  Production-safe PDF generator for Vercel / Node.js
+  ASSET PATHS
 ============================================================
 */
+
+const LOGO_PATH = path.join(
+  __dirname,
+  "../assets/logo.png"
+);
+
+// Exact CODECPS logo mark used as center watermark
+const LOGO_MARK_PATH = path.join(
+  __dirname,
+  "../assets/logo-mark.png"
+);
+
+// MSME logo
+const MSME_LOGO_PATH = path.join(
+  __dirname,
+  "../assets/msme.png"
+);
+
+// SIGNATURE IMAGE
+// PNG signature placed inside assets folder
+const SIGNATURE_IMAGE_PATH = path.join(
+  __dirname,
+  "../assets/signature.png"
+);
+
+const hasLogo = fs.existsSync(LOGO_PATH);
+const hasLogoMark = fs.existsSync(LOGO_MARK_PATH);
+const hasMsmeLogo = fs.existsSync(MSME_LOGO_PATH);
+const hasSignatureImage = fs.existsSync(
+  SIGNATURE_IMAGE_PATH
+);
 
 /*
 ============================================================
-  ASSET PATH RESOLUTION
-============================================================
-
-  IMPORTANT:
-  Vercel serverless functions can have different runtime
-  paths depending on how the function is bundled.
-
-  We therefore try multiple possible locations instead
-  of depending on only __dirname.
+  FORMAT DATE
 ============================================================
 */
 
-const findAsset = (fileName) => {
-  const possiblePaths = [
-    // Normal source structure
-    path.join(
-      __dirname,
-      "../assets",
-      fileName
-    ),
+const formatDate = (date) => {
+  if (!date) return null;
 
-    // Current working directory
-    path.join(
-      process.cwd(),
-      "server",
-      "src",
-      "assets",
-      fileName
-    ),
+  const d = new Date(date);
 
-    path.join(
-      process.cwd(),
-      "src",
-      "assets",
-      fileName
-    ),
-
-    path.join(
-      process.cwd(),
-      "assets",
-      fileName
-    ),
-
-    // Vercel bundled location fallback
-    path.join(
-      __dirname,
-      "../../assets",
-      fileName
-    ),
-
-    path.join(
-      __dirname,
-      "../../../assets",
-      fileName
-    ),
-  ];
-
-  for (const assetPath of possiblePaths) {
-    try {
-      if (
-        fs.existsSync(assetPath)
-      ) {
-        return assetPath;
-      }
-    } catch (error) {
-      console.warn(
-        `Asset check failed for ${fileName}:`,
-        error.message
-      );
-    }
+  if (isNaN(d.getTime())) {
+    return null;
   }
 
-  return null;
+  return d.toLocaleDateString("en-IN", {
+    day: "2-digit",
+    month: "short",
+    year: "numeric",
+  });
 };
-
-/*
-============================================================
-  ASSETS
-============================================================
-*/
-
-const LOGO_PATH =
-  findAsset("logo.png");
-
-const LOGO_MARK_PATH =
-  findAsset("logo-mark.png");
-
-const MSME_LOGO_PATH =
-  findAsset("msme.png");
-
-const SIGNATURE_IMAGE_PATH =
-  findAsset("signature.png");
-
-/*
-============================================================
-  ASSET DEBUG
-============================================================
-*/
-
-console.log(
-  "=============================================="
-);
-
-console.log(
-  "CERTIFICATE ASSETS"
-);
-
-console.log(
-  "Working directory:",
-  process.cwd()
-);
-
-console.log(
-  "Service directory:",
-  __dirname
-);
-
-console.log(
-  "Logo:",
-  LOGO_PATH || "NOT FOUND"
-);
-
-console.log(
-  "Logo Mark:",
-  LOGO_MARK_PATH || "NOT FOUND"
-);
-
-console.log(
-  "MSME Logo:",
-  MSME_LOGO_PATH || "NOT FOUND"
-);
-
-console.log(
-  "Signature:",
-  SIGNATURE_IMAGE_PATH || "NOT FOUND"
-);
-
-console.log(
-  "=============================================="
-);
 
 /*
 ============================================================
@@ -185,53 +93,9 @@ const safeText = (
     return fallback;
   }
 
-  const result =
-    String(value).trim();
-
-  return result || fallback;
-};
-
-/*
-============================================================
-  FORMAT DATE
-============================================================
-*/
-
-const formatDate = (
-  date
-) => {
-  if (!date) {
-    return null;
-  }
-
-  try {
-    const parsedDate =
-      new Date(date);
-
-    if (
-      Number.isNaN(
-        parsedDate.getTime()
-      )
-    ) {
-      return null;
-    }
-
-    return parsedDate.toLocaleDateString(
-      "en-IN",
-      {
-        day: "2-digit",
-        month: "short",
-        year: "numeric",
-      }
-    );
-  } catch (error) {
-    console.error(
-      "Date formatting error:",
-      error.message
-    );
-
-    return null;
-  }
+  return (
+    String(value).trim() || fallback
+  );
 };
 
 /*
@@ -254,22 +118,15 @@ const drawBadge = (
   y,
   size = ICON_SIZE
 ) => {
-  try {
-    doc
-      .save()
-      .circle(
-        x + size / 2,
-        y + size / 2,
-        size / 2
-      )
-      .fill(BRAND_COLOR)
-      .restore();
-  } catch (error) {
-    console.error(
-      "Badge drawing error:",
-      error.message
-    );
-  }
+  doc
+    .save()
+    .circle(
+      x + size / 2,
+      y + size / 2,
+      size / 2
+    )
+    .fill(BRAND_COLOR)
+    .restore();
 };
 
 /*
@@ -283,11 +140,7 @@ const drawDocIcon = (
   x,
   y
 ) => {
-  drawBadge(
-    doc,
-    x,
-    y
-  );
+  drawBadge(doc, x, y);
 
   const cx =
     x + ICON_SIZE / 2;
@@ -295,53 +148,46 @@ const drawDocIcon = (
   const cy =
     y + ICON_SIZE / 2;
 
-  try {
-    doc
-      .save()
-      .roundedRect(
-        cx - 6,
-        cy - 8,
-        12,
-        16,
-        1.5
-      )
-      .lineWidth(1.3)
-      .stroke("#ffffff");
+  doc
+    .save()
+    .roundedRect(
+      cx - 6,
+      cy - 8,
+      12,
+      16,
+      1.5
+    )
+    .lineWidth(1.3)
+    .stroke("#ffffff");
 
-    doc
-      .moveTo(
-        cx - 3,
-        cy - 3
-      )
-      .lineTo(
-        cx + 3,
-        cy - 3
-      )
-      .moveTo(
-        cx - 3,
-        cy
-      )
-      .lineTo(
-        cx + 3,
-        cy
-      )
-      .moveTo(
-        cx - 3,
-        cy + 3
-      )
-      .lineTo(
-        cx + 1,
-        cy + 3
-      )
-      .lineWidth(1)
-      .stroke("#ffffff")
-      .restore();
-  } catch (error) {
-    console.error(
-      "Document icon error:",
-      error.message
-    );
-  }
+  doc
+    .moveTo(
+      cx - 3,
+      cy - 3
+    )
+    .lineTo(
+      cx + 3,
+      cy - 3
+    )
+    .moveTo(
+      cx - 3,
+      cy
+    )
+    .lineTo(
+      cx + 3,
+      cy
+    )
+    .moveTo(
+      cx - 3,
+      cy + 3
+    )
+    .lineTo(
+      cx + 1,
+      cy + 3
+    )
+    .lineWidth(1)
+    .stroke("#ffffff")
+    .restore();
 };
 
 /*
@@ -355,11 +201,7 @@ const drawCalendarIcon = (
   x,
   y
 ) => {
-  drawBadge(
-    doc,
-    x,
-    y
-  );
+  drawBadge(doc, x, y);
 
   const cx =
     x + ICON_SIZE / 2;
@@ -367,57 +209,50 @@ const drawCalendarIcon = (
   const cy =
     y + ICON_SIZE / 2;
 
-  try {
-    doc
-      .save()
-      .roundedRect(
-        cx - 7,
-        cy - 6,
-        14,
-        13,
-        1.5
-      )
-      .lineWidth(1.3)
-      .stroke("#ffffff");
+  doc
+    .save()
+    .roundedRect(
+      cx - 7,
+      cy - 6,
+      14,
+      13,
+      1.5
+    )
+    .lineWidth(1.3)
+    .stroke("#ffffff");
 
-    doc
-      .moveTo(
-        cx - 7,
-        cy - 2
-      )
-      .lineTo(
-        cx + 7,
-        cy - 2
-      )
-      .lineWidth(1)
-      .stroke("#ffffff");
+  doc
+    .moveTo(
+      cx - 7,
+      cy - 2
+    )
+    .lineTo(
+      cx + 7,
+      cy - 2
+    )
+    .lineWidth(1)
+    .stroke("#ffffff");
 
-    doc
-      .moveTo(
-        cx - 3.5,
-        cy - 8
-      )
-      .lineTo(
-        cx - 3.5,
-        cy - 5
-      )
-      .moveTo(
-        cx + 3.5,
-        cy - 8
-      )
-      .lineTo(
-        cx + 3.5,
-        cy - 5
-      )
-      .lineWidth(1.3)
-      .stroke("#ffffff")
-      .restore();
-  } catch (error) {
-    console.error(
-      "Calendar icon error:",
-      error.message
-    );
-  }
+  doc
+    .moveTo(
+      cx - 3.5,
+      cy - 8
+    )
+    .lineTo(
+      cx - 3.5,
+      cy - 5
+    )
+    .moveTo(
+      cx + 3.5,
+      cy - 8
+    )
+    .lineTo(
+      cx + 3.5,
+      cy - 5
+    )
+    .lineWidth(1.3)
+    .stroke("#ffffff")
+    .restore();
 };
 
 /*
@@ -431,11 +266,7 @@ const drawClockIcon = (
   x,
   y
 ) => {
-  drawBadge(
-    doc,
-    x,
-    y
-  );
+  drawBadge(doc, x, y);
 
   const cx =
     x + ICON_SIZE / 2;
@@ -443,48 +274,41 @@ const drawClockIcon = (
   const cy =
     y + ICON_SIZE / 2;
 
-  try {
-    doc
-      .save()
-      .circle(
-        cx,
-        cy,
-        7
-      )
-      .lineWidth(1.3)
-      .stroke("#ffffff");
+  doc
+    .save()
+    .circle(
+      cx,
+      cy,
+      7
+    )
+    .lineWidth(1.3)
+    .stroke("#ffffff");
 
-    doc
-      .moveTo(
-        cx,
-        cy
-      )
-      .lineTo(
-        cx,
-        cy - 4
-      )
-      .moveTo(
-        cx,
-        cy
-      )
-      .lineTo(
-        cx + 3,
-        cy + 1
-      )
-      .lineWidth(1.1)
-      .stroke("#ffffff")
-      .restore();
-  } catch (error) {
-    console.error(
-      "Clock icon error:",
-      error.message
-    );
-  }
+  doc
+    .moveTo(
+      cx,
+      cy
+    )
+    .lineTo(
+      cx,
+      cy - 4
+    )
+    .moveTo(
+      cx,
+      cy
+    )
+    .lineTo(
+      cx + 3,
+      cy + 1
+    )
+    .lineWidth(1.1)
+    .stroke("#ffffff")
+    .restore();
 };
 
 /*
 ============================================================
-  NAME FLOURISH
+  PREMIUM NAME FLOURISH
 ============================================================
 */
 
@@ -497,100 +321,99 @@ const drawNameFlourish = (
   const dir = side;
   const color = BRAND_COLOR;
 
-  try {
-    doc.save();
+  doc.save();
 
-    /*
-    Diamond
-    */
+  /*
+  ----------------------------------------------------------
+    DIAMOND
+  ----------------------------------------------------------
+  */
 
-    doc
-      .moveTo(
-        centerX,
-        centerY - 4
-      )
-      .lineTo(
+  doc
+    .polygon(
+      [centerX, centerY - 4],
+      [
         centerX + 4,
-        centerY
-      )
-      .lineTo(
-        centerX,
-        centerY + 4
-      )
-      .lineTo(
-        centerX - 4,
-        centerY
-      )
-      .closePath()
-      .fill(color);
-
-    /*
-    Main line
-    */
-
-    const lineStartX =
-      centerX + dir * 8;
-
-    const lineEndX =
-      centerX + dir * 70;
-
-    doc
-      .moveTo(
-        lineStartX,
-        centerY
-      )
-      .lineTo(
-        lineEndX,
-        centerY
-      )
-      .lineWidth(1.4)
-      .strokeColor(color)
-      .stroke();
-
-    /*
-    Secondary line
-    */
-
-    doc
-      .moveTo(
-        lineStartX + dir * 4,
-        centerY - 3
-      )
-      .lineTo(
-        lineEndX - dir * 18,
-        centerY - 3
-      )
-      .lineWidth(0.6)
-      .strokeColor(color)
-      .opacity(0.5)
-      .stroke();
-
-    doc.opacity(1);
-
-    /*
-    End dot
-    */
-
-    doc
-      .circle(
-        lineEndX,
         centerY,
-        1.6
-      )
-      .fill(color);
+      ],
+      [
+        centerX,
+        centerY + 4,
+      ],
+      [
+        centerX - 4,
+        centerY,
+      ]
+    )
+    .fill(color);
 
-    doc.restore();
-  } catch (error) {
-    console.error(
-      "Name flourish error:",
-      error.message
-    );
-  }
+  /*
+  ----------------------------------------------------------
+    MAIN LINE
+  ----------------------------------------------------------
+  */
+
+  const lineStartX =
+    centerX + dir * 8;
+
+  const lineEndX =
+    centerX + dir * 70;
+
+  doc
+    .moveTo(
+      lineStartX,
+      centerY
+    )
+    .lineTo(
+      lineEndX,
+      centerY
+    )
+    .lineWidth(1.4)
+    .strokeColor(color)
+    .stroke();
+
+  /*
+  ----------------------------------------------------------
+    SECONDARY LINE
+  ----------------------------------------------------------
+  */
+
+  doc
+    .moveTo(
+      lineStartX + dir * 4,
+      centerY - 3
+    )
+    .lineTo(
+      lineEndX - dir * 18,
+      centerY - 3
+    )
+    .lineWidth(0.6)
+    .strokeColor(color)
+    .opacity(0.5)
+    .stroke();
+
+  doc.opacity(1);
+
+  /*
+  ----------------------------------------------------------
+    END DOT
+  ----------------------------------------------------------
+  */
+
+  doc
+    .circle(
+      lineEndX,
+      centerY,
+      1.6
+    )
+    .fill(color);
+
+  doc.restore();
 };
 
 /*
 ============================================================
-  CENTER WATERMARK
+  EXACT CODECPS LOGO WATERMARK
 ============================================================
 */
 
@@ -599,55 +422,80 @@ const drawCodeCPSWatermark = (
   pageWidth,
   pageHeight
 ) => {
-  if (!LOGO_MARK_PATH) {
-    console.warn(
-      "Watermark logo not found. Skipping watermark."
-    );
-
-    return;
-  }
-
   try {
+    if (!hasLogoMark) {
+      console.warn(
+        "CODECPS watermark logo not found:",
+        LOGO_MARK_PATH
+      );
+
+      return;
+    }
+
+    /*
+    --------------------------------------------------------
+      WATERMARK SIZE
+    --------------------------------------------------------
+    */
+
     const watermarkWidth = 135;
 
     const watermarkHeight =
       watermarkWidth *
       (480 / 864);
 
+    /*
+    --------------------------------------------------------
+      CENTER POSITION
+    --------------------------------------------------------
+    */
+
     const watermarkX =
-      (
-        pageWidth -
-        watermarkWidth
-      ) / 2;
+      (pageWidth -
+        watermarkWidth) /
+      2;
 
     const watermarkY =
-      (
-        pageHeight -
-        watermarkHeight
-      ) / 2 + 5;
+      (pageHeight -
+        watermarkHeight) /
+        2 +
+      5;
+
+    /*
+    --------------------------------------------------------
+      DRAW WATERMARK
+    --------------------------------------------------------
+    */
 
     doc.save();
 
     doc.opacity(0.055);
 
-    doc.image(
-      LOGO_MARK_PATH,
-      watermarkX,
-      watermarkY,
-      {
-        width:
-          watermarkWidth,
-        height:
-          watermarkHeight,
-      }
-    );
+    try {
+      doc.image(
+        LOGO_MARK_PATH,
+        watermarkX,
+        watermarkY,
+        {
+          width:
+            watermarkWidth,
+          height:
+            watermarkHeight,
+        }
+      );
+    } catch (imageError) {
+      console.error(
+        "Watermark image rendering error:",
+        imageError.message
+      );
+    }
 
     doc.opacity(1);
 
     doc.restore();
   } catch (error) {
     console.error(
-      "Watermark rendering failed:",
+      "Certificate watermark error:",
       error.message
     );
   }
@@ -655,7 +503,13 @@ const drawCodeCPSWatermark = (
 
 /*
 ============================================================
-  SIGNATURE
+  SIGNATURE IMAGE
+============================================================
+
+  IMPORTANT:
+  signature.png should be a transparent PNG.
+
+  Signature is intentionally kept SMALL and clean.
 ============================================================
 */
 
@@ -664,22 +518,44 @@ const drawSignature = (
   pageWidth,
   sigLineY
 ) => {
-  if (!SIGNATURE_IMAGE_PATH) {
+  if (
+    !hasSignatureImage
+  ) {
     console.warn(
-      "Signature image not found. Skipping signature image."
+      "Signature image not found:",
+      SIGNATURE_IMAGE_PATH
     );
 
     return;
   }
 
   try {
+    /*
+    --------------------------------------------------------
+      SMALL PROFESSIONAL SIGNATURE
+    --------------------------------------------------------
+
+      Keep width around 125px.
+      This prevents the signature from becoming too large.
+    --------------------------------------------------------
+    */
+
     const signatureWidth = 125;
 
+    /*
+      Signature image height will be calculated
+      automatically by PDFKit to preserve aspect ratio.
+    */
+
     const signatureX =
-      (
-        pageWidth -
-        signatureWidth
-      ) / 2;
+      (pageWidth -
+        signatureWidth) /
+      2;
+
+    /*
+      Position signature slightly above
+      the signature line.
+    */
 
     const signatureY =
       sigLineY - 34;
@@ -697,47 +573,11 @@ const drawSignature = (
     );
 
     doc.restore();
-  } catch (error) {
+  } catch (signatureError) {
     console.error(
-      "Signature rendering failed:",
-      error.message
+      "Signature image rendering error:",
+      signatureError.message
     );
-  }
-};
-
-/*
-============================================================
-  SAFE IMAGE
-============================================================
-*/
-
-const safeImage = (
-  doc,
-  imagePath,
-  x,
-  y,
-  options = {}
-) => {
-  if (!imagePath) {
-    return false;
-  }
-
-  try {
-    doc.image(
-      imagePath,
-      x,
-      y,
-      options
-    );
-
-    return true;
-  } catch (error) {
-    console.error(
-      `Image rendering failed: ${imagePath}`,
-      error.message
-    );
-
-    return false;
   }
 };
 
@@ -747,11 +587,13 @@ const safeImage = (
 ============================================================
 */
 
-const generateCertificatePDF =
-  async (internship) => {
+const generateCertificatePDF = async (
+  internship
+) => {
+  try {
     /*
     ========================================================
-      VALIDATE INTERNSHIP
+      VALIDATE DATA
     ========================================================
     */
 
@@ -760,12 +602,6 @@ const generateCertificatePDF =
         "Internship data is missing"
       );
     }
-
-    /*
-    ========================================================
-      CERTIFICATE ID
-    ========================================================
-    */
 
     const certificateId =
       safeText(
@@ -777,12 +613,6 @@ const generateCertificatePDF =
         "Certificate ID is missing"
       );
     }
-
-    /*
-    ========================================================
-      BASIC DATA
-    ========================================================
-    */
 
     const fullName =
       safeText(
@@ -804,56 +634,18 @@ const generateCertificatePDF =
 
     /*
     ========================================================
-      VERIFY BASE URL
-    ========================================================
-    */
-
-    let baseUrl =
-      safeText(
-        VERIFY_BASE_URL
-      );
-
-    /*
-    Remove trailing slash
-    */
-
-    baseUrl =
-      baseUrl.replace(
-        /\/+$/,
-        ""
-      );
-
-    /*
-    Production fallback
-    */
-
-    if (
-      !baseUrl ||
-      baseUrl.includes(
-        "localhost"
-      )
-    ) {
-      baseUrl =
-        safeText(
-          process.env.CLIENT_URL
-        );
-
-      baseUrl =
-        baseUrl.replace(
-          /\/+$/,
-          ""
-        );
-    }
-
-    /*
-    ========================================================
       VERIFY URL
     ========================================================
     */
 
+    const baseUrl =
+      safeText(
+        VERIFY_BASE_URL
+      );
+
     if (!baseUrl) {
       throw new Error(
-        "Verification URL is not configured. Set CLIENT_URL in Vercel."
+        "VERIFY_BASE_URL is not configured"
       );
     }
 
@@ -861,11 +653,6 @@ const generateCertificatePDF =
       `${baseUrl}/verify/${encodeURIComponent(
         certificateId
       )}`;
-
-    console.log(
-      "Certificate verification URL:",
-      verifyUrl
-    );
 
     /*
     ========================================================
@@ -885,39 +672,42 @@ const generateCertificatePDF =
             errorCorrectionLevel:
               "M",
             color: {
-              dark:
-                DARK_COLOR ||
-                "#111827",
-              light:
-                "#ffffff",
+              dark: DARK_COLOR,
+              light: "#ffffff",
             },
           }
         );
-    } catch (error) {
+    } catch (qrError) {
       console.error(
-        "QR generation failed:",
-        error
+        "QR generation error:",
+        qrError
       );
 
       throw new Error(
-        `Failed to generate QR code: ${error.message}`
+        `Failed to generate QR code: ${qrError.message}`
       );
     }
 
     /*
     ========================================================
-      CREATE PDF
+      PDF PROMISE
     ========================================================
     */
 
-    return new Promise(
+    return await new Promise(
       (
         resolve,
         reject
       ) => {
-        let finished = false;
+        let resolved = false;
 
         try {
+          /*
+          --------------------------------------------------
+            CREATE PDF
+          --------------------------------------------------
+          */
+
           const doc =
             new PDFDocument({
               size: "A4",
@@ -926,38 +716,32 @@ const generateCertificatePDF =
               margin: 0,
               autoFirstPage:
                 true,
-              compress: true,
             });
 
-          const chunks = [];
-
           /*
-          ==================================================
-            PDF DATA
-          ==================================================
+          --------------------------------------------------
+            PDF BUFFER
+          --------------------------------------------------
           */
+
+          const chunks = [];
 
           doc.on(
             "data",
             (chunk) => {
-              chunks.push(chunk);
+              chunks.push(
+                chunk
+              );
             }
           );
-
-          /*
-          ==================================================
-            PDF END
-          ==================================================
-          */
 
           doc.on(
             "end",
             () => {
-              if (finished) {
+              if (resolved)
                 return;
-              }
 
-              finished = true;
+              resolved = true;
 
               try {
                 const pdfBuffer =
@@ -966,10 +750,7 @@ const generateCertificatePDF =
                   );
 
                 if (
-                  !Buffer.isBuffer(
-                    pdfBuffer
-                  ) ||
-                  pdfBuffer.length === 0
+                  !pdfBuffer.length
                 ) {
                   return reject(
                     new Error(
@@ -978,41 +759,31 @@ const generateCertificatePDF =
                   );
                 }
 
-                console.log(
-                  "Certificate PDF generated successfully:",
-                  pdfBuffer.length,
-                  "bytes"
-                );
-
                 resolve(
                   pdfBuffer
                 );
-              } catch (error) {
-                reject(error);
+              } catch (
+                bufferError
+              ) {
+                reject(
+                  bufferError
+                );
               }
             }
           );
 
-          /*
-          ==================================================
-            PDF ERROR
-          ==================================================
-          */
-
           doc.on(
             "error",
             (error) => {
-              if (finished) {
+              if (resolved)
                 return;
-              }
-
-              finished = true;
 
               console.error(
-                "PDF document error:",
+                "PDF stream error:",
                 error
               );
 
+              resolved = true;
               reject(error);
             }
           );
@@ -1046,7 +817,7 @@ const generateCertificatePDF =
 
           /*
           ==================================================
-            WATERMARK
+            CODECPS CENTER WATERMARK
           ==================================================
           */
 
@@ -1100,24 +871,42 @@ const generateCertificatePDF =
           ==================================================
           */
 
-          const logoRendered =
-            safeImage(
-              doc,
-              LOGO_PATH,
-              55,
-              45,
-              {
-                width: 150,
-              }
-            );
+          if (hasLogo) {
+            try {
+              doc.image(
+                LOGO_PATH,
+                55,
+                45,
+                {
+                  width: 150,
+                }
+              );
+            } catch (
+              logoError
+            ) {
+              console.error(
+                "Logo rendering error:",
+                logoError.message
+              );
 
-          /*
-          ==================================================
-            LOGO FALLBACK
-          ==================================================
-          */
-
-          if (!logoRendered) {
+              doc
+                .fontSize(20)
+                .fillColor(
+                  BRAND_COLOR
+                )
+                .font(
+                  "Helvetica-Bold"
+                )
+                .text(
+                  safeText(
+                    COMPANY_NAME,
+                    "CodeCPS Technologies"
+                  ),
+                  55,
+                  55
+                );
+            }
+          } else {
             doc
               .fontSize(20)
               .fillColor(
@@ -1170,11 +959,13 @@ const generateCertificatePDF =
 
           doc
             .moveTo(
-              pageWidth / 2 - 90,
+              pageWidth / 2 -
+                90,
               148
             )
             .lineTo(
-              pageWidth / 2 + 90,
+              pageWidth / 2 +
+                90,
               148
             )
             .lineWidth(2)
@@ -1191,9 +982,7 @@ const generateCertificatePDF =
 
           doc
             .fontSize(12)
-            .font(
-              "Helvetica"
-            )
+            .font("Helvetica")
             .fillColor(
               "#4b5563"
             )
@@ -1214,15 +1003,14 @@ const generateCertificatePDF =
           */
 
           const nameY = 190;
-
-          const nameFontSize =
-            36;
-
+          const nameFontSize = 36;
           const nameText =
             fullName;
 
           /*
-          NAME SHADOW
+          --------------------------------------------------
+            NAME SHADOW
+          --------------------------------------------------
           */
 
           doc
@@ -1248,7 +1036,9 @@ const generateCertificatePDF =
             );
 
           /*
-          MAIN NAME
+          --------------------------------------------------
+            MAIN NAME
+          --------------------------------------------------
           */
 
           doc
@@ -1274,9 +1064,9 @@ const generateCertificatePDF =
             );
 
           /*
-          ==================================================
+          --------------------------------------------------
             NAME FLOURISH
-          ==================================================
+          --------------------------------------------------
           */
 
           const nameWidth =
@@ -1296,13 +1086,14 @@ const generateCertificatePDF =
             nameFontSize *
               0.68;
 
-          const flourishGap =
-            nameWidth / 2 + 14;
+          const flourishGapFromName =
+            nameWidth / 2 +
+            14;
 
           drawNameFlourish(
             doc,
             nameCenterX -
-              flourishGap,
+              flourishGapFromName,
             nameLineY,
             -1
           );
@@ -1310,7 +1101,7 @@ const generateCertificatePDF =
           drawNameFlourish(
             doc,
             nameCenterX +
-              flourishGap,
+              flourishGapFromName,
             nameLineY,
             1
           );
@@ -1334,23 +1125,24 @@ const generateCertificatePDF =
             internship.duration
           ) {
             try {
-              const result =
+              const derivedResult =
                 calculateEndDate(
                   internship.startDate,
                   internship.duration
                 );
 
               if (
-                result &&
-                result.endDate
+                derivedResult
               ) {
                 derivedEndDate =
-                  result.endDate;
+                  derivedResult.endDate;
               }
-            } catch (error) {
+            } catch (
+              dateError
+            ) {
               console.error(
-                "End date calculation failed:",
-                error.message
+                "End date calculation error:",
+                dateError.message
               );
             }
           }
@@ -1369,30 +1161,26 @@ const generateCertificatePDF =
           ==================================================
           */
 
-          let bodyText =
-            `for successfully completing an internship in ${domain} at ${safeText(
+          const bodyText =
+            `for successfully completing an internship in ` +
+            `${domain} at ${safeText(
               COMPANY_FULL_NAME,
               "CodeCPS Technologies"
-            )}, for a duration of ${duration}`;
-
-          if (
-            startDateFormatted &&
-            endDateFormatted
-          ) {
-            bodyText +=
-              ` from ${startDateFormatted} to ${endDateFormatted}.`;
-          } else {
-            bodyText += ".";
-          }
-
-          bodyText +=
-            " During this period, the intern demonstrated dedication, strong learning ability and delivered quality work on assigned projects.";
+            )}, ` +
+            `for a duration of ${duration}` +
+            (
+              startDateFormatted &&
+              endDateFormatted
+                ? ` from ${startDateFormatted} to ${endDateFormatted}.`
+                : "."
+            ) +
+            ` During this period, the intern demonstrated dedication, ` +
+            `strong learning ability and delivered quality work on ` +
+            `assigned projects.`;
 
           doc
             .fontSize(12.5)
-            .font(
-              "Helvetica"
-            )
+            .font("Helvetica")
             .fillColor(
               "#374151"
             )
@@ -1404,7 +1192,8 @@ const generateCertificatePDF =
                 align:
                   "center",
                 width:
-                  pageWidth - 220,
+                  pageWidth -
+                  220,
                 lineGap: 6,
               }
             );
@@ -1430,7 +1219,9 @@ const generateCertificatePDF =
             footerY;
 
           /*
-          CERTIFICATE ID
+          --------------------------------------------------
+            CERTIFICATE ID
+          --------------------------------------------------
           */
 
           drawDocIcon(
@@ -1455,9 +1246,7 @@ const generateCertificatePDF =
 
           doc
             .fontSize(10)
-            .font(
-              "Helvetica"
-            )
+            .font("Helvetica")
             .fillColor(
               "#4b5563"
             )
@@ -1468,7 +1257,9 @@ const generateCertificatePDF =
             );
 
           /*
-          DATE OF ISSUE
+          --------------------------------------------------
+            DATE OF ISSUE
+          --------------------------------------------------
           */
 
           rowY += 48;
@@ -1495,9 +1286,7 @@ const generateCertificatePDF =
 
           doc
             .fontSize(10)
-            .font(
-              "Helvetica"
-            )
+            .font("Helvetica")
             .fillColor(
               "#4b5563"
             )
@@ -1513,7 +1302,9 @@ const generateCertificatePDF =
             );
 
           /*
-          DURATION
+          --------------------------------------------------
+            DURATION
+          --------------------------------------------------
           */
 
           rowY += 48;
@@ -1540,9 +1331,7 @@ const generateCertificatePDF =
 
           doc
             .fontSize(10)
-            .font(
-              "Helvetica"
-            )
+            .font("Helvetica")
             .fillColor(
               "#4b5563"
             )
@@ -1554,7 +1343,7 @@ const generateCertificatePDF =
 
           /*
           ==================================================
-            LEFT DIVIDER
+            LEFT VERTICAL DIVIDER
           ==================================================
           */
 
@@ -1567,7 +1356,9 @@ const generateCertificatePDF =
               leftX + 175,
               footerY + 105
             )
-            .lineWidth(0.75)
+            .lineWidth(
+              0.75
+            )
             .strokeColor(
               "#e5e7eb"
             )
@@ -1575,12 +1366,11 @@ const generateCertificatePDF =
 
           /*
           ==================================================
-            DATE COLUMNS
+            MIDDLE DATE COLUMNS
           ==================================================
           */
 
-          const colWidth =
-            130;
+          const colWidth = 130;
 
           const startColCenterX =
             leftX +
@@ -1593,7 +1383,9 @@ const generateCertificatePDF =
             30;
 
           /*
-          START DATE ICON
+          --------------------------------------------------
+            START DATE
+          --------------------------------------------------
           */
 
           drawCalendarIcon(
@@ -1602,10 +1394,6 @@ const generateCertificatePDF =
               ICON_SIZE / 2,
             footerY + 15
           );
-
-          /*
-          START DATE TITLE
-          */
 
           doc
             .fontSize(10.5)
@@ -1628,15 +1416,9 @@ const generateCertificatePDF =
               }
             );
 
-          /*
-          START DATE VALUE
-          */
-
           doc
             .fontSize(10)
-            .font(
-              "Helvetica"
-            )
+            .font("Helvetica")
             .fillColor(
               "#4b5563"
             )
@@ -1655,7 +1437,9 @@ const generateCertificatePDF =
             );
 
           /*
-          DATE DIVIDER
+          --------------------------------------------------
+            DATE DIVIDER
+          --------------------------------------------------
           */
 
           const dividerX =
@@ -1673,16 +1457,18 @@ const generateCertificatePDF =
               dividerX,
               footerY + 95
             )
-            .lineWidth(0.75)
+            .lineWidth(
+              0.75
+            )
             .strokeColor(
               "#e5e7eb"
             )
             .stroke();
 
           /*
-          ==================================================
+          --------------------------------------------------
             COMPLETION DATE
-          ==================================================
+          --------------------------------------------------
           */
 
           drawCalendarIcon(
@@ -1715,9 +1501,7 @@ const generateCertificatePDF =
 
           doc
             .fontSize(10)
-            .font(
-              "Helvetica"
-            )
+            .font("Helvetica")
             .fillColor(
               "#4b5563"
             )
@@ -1751,7 +1535,17 @@ const generateCertificatePDF =
             220;
 
           /*
-          SIGNATURE IMAGE
+          --------------------------------------------------
+            SIGNATURE IMAGE
+          --------------------------------------------------
+
+            Uses assets/signature.png
+
+            Small professional size:
+            125px width
+
+            It is NOT treated as a font.
+          --------------------------------------------------
           */
 
           drawSignature(
@@ -1761,7 +1555,9 @@ const generateCertificatePDF =
           );
 
           /*
-          SIGNATURE LINE
+          --------------------------------------------------
+            SIGNATURE LINE
+          --------------------------------------------------
           */
 
           doc
@@ -1780,7 +1576,9 @@ const generateCertificatePDF =
             .stroke();
 
           /*
-          AUTHORIZED SIGNATORY
+          --------------------------------------------------
+            AUTHORIZED SIGNATORY
+          --------------------------------------------------
           */
 
           doc
@@ -1794,7 +1592,8 @@ const generateCertificatePDF =
             .text(
               "Authorized Signatory",
               sigCenterX -
-                sigBoxWidth / 2,
+                sigBoxWidth /
+                  2,
               sigLineY + 8,
               {
                 width:
@@ -1805,24 +1604,24 @@ const generateCertificatePDF =
             );
 
           /*
-          DESIGNATION
+          --------------------------------------------------
+            DESIGNATION
+          --------------------------------------------------
           */
 
           doc
             .fontSize(9)
-            .font(
-              "Helvetica"
-            )
+            .font("Helvetica")
             .fillColor(
               "#6b7280"
             )
             .text(
-              safeText(
-                SIGNATORY_DESIGNATION,
-                "Authorized Signatory"
-              ),
+              SIGNATORY_DESIGNATION ||
+                COMPANY_FULL_NAME ||
+                "Authorized Signatory",
               sigCenterX -
-                sigBoxWidth / 2,
+                sigBoxWidth /
+                  2,
               sigLineY + 23,
               {
                 width:
@@ -1838,8 +1637,7 @@ const generateCertificatePDF =
           ==================================================
           */
 
-          const qrSize =
-            100;
+          const qrSize = 100;
 
           const qrX =
             pageWidth -
@@ -1861,22 +1659,18 @@ const generateCertificatePDF =
                   qrSize,
               }
             );
-          } catch (error) {
+          } catch (
+            qrImageError
+          ) {
             console.error(
-              "QR rendering failed:",
-              error.message
+              "QR image rendering error:",
+              qrImageError.message
             );
           }
 
-          /*
-          QR TEXT
-          */
-
           doc
             .fontSize(9)
-            .font(
-              "Helvetica"
-            )
+            .font("Helvetica")
             .fillColor(
               "#6b7280"
             )
@@ -1909,28 +1703,45 @@ const generateCertificatePDF =
               pageWidth - 50,
               pageHeight - 74
             )
-            .lineWidth(0.5)
+            .lineWidth(
+              0.5
+            )
             .strokeColor(
               "#e5e7eb"
             )
             .stroke();
 
           /*
-          MSME LOGO
+          --------------------------------------------------
+            MSME LOGO
+          --------------------------------------------------
           */
 
-          safeImage(
-            doc,
-            MSME_LOGO_PATH,
-            pageWidth / 2 - 232,
-            pageHeight - 74,
-            {
-              width: 46,
+          if (hasMsmeLogo) {
+            try {
+              doc.image(
+                MSME_LOGO_PATH,
+                pageWidth / 2 -
+                  232,
+                pageHeight - 74,
+                {
+                  width: 46,
+                }
+              );
+            } catch (
+              msmeError
+            ) {
+              console.error(
+                "MSME logo rendering error:",
+                msmeError.message
+              );
             }
-          );
+          }
 
           /*
-          MSME TEXT
+          --------------------------------------------------
+            MSME TEXT
+          --------------------------------------------------
           */
 
           doc
@@ -1946,7 +1757,8 @@ const generateCertificatePDF =
                 COMPANY_FULL_NAME,
                 "CodeCPS Technologies"
               )} is a registered Micro Enterprise under MSME`,
-              pageWidth / 2 - 170,
+              pageWidth / 2 -
+                170,
               pageHeight - 64,
               {
                 width: 340,
@@ -1956,20 +1768,21 @@ const generateCertificatePDF =
             );
 
           /*
-          UDYAM NUMBER
+          --------------------------------------------------
+            UDYAM NUMBER
+          --------------------------------------------------
           */
 
           doc
             .fontSize(9)
-            .font(
-              "Helvetica"
-            )
+            .font("Helvetica")
             .fillColor(
               "#4b5563"
             )
             .text(
               "Udyam Registration No: ",
-              pageWidth / 2 - 170,
+              pageWidth / 2 -
+                170,
               pageHeight - 48,
               {
                 continued:
@@ -1997,9 +1810,7 @@ const generateCertificatePDF =
 
           doc
             .fontSize(6.5)
-            .font(
-              "Helvetica"
-            )
+            .font("Helvetica")
             .fillColor(
               "#a3aab5"
             )
@@ -2017,25 +1828,33 @@ const generateCertificatePDF =
 
           /*
           ==================================================
-            FINISH
+            FINISH PDF
           ==================================================
           */
 
           doc.end();
         } catch (error) {
           console.error(
-            "CERTIFICATE PDF GENERATION ERROR:",
+            "❌ CERTIFICATE PDF GENERATION ERROR:",
             error
           );
 
-          if (!finished) {
-            finished = true;
+          if (!resolved) {
+            resolved = true;
             reject(error);
           }
         }
       }
     );
-  };
+  } catch (error) {
+    console.error(
+      "❌ CERTIFICATE GENERATION ERROR:",
+      error
+    );
+
+    throw error;
+  }
+};
 
 /*
 ============================================================
