@@ -22,7 +22,6 @@ const testimonials = [
       "I wanted a website for conducting different types of polls with a simple system for users and management. CodeCPS Technologies developed the platform according to my requirements perfectly.",
     rating: 5,
   },
-
   {
     id: 2,
     name: "Ankit Verma",
@@ -33,7 +32,6 @@ const testimonials = [
       "I had a project related to weather calculations and environmental data processing. CodeCPS Technologies understood the requirements well and developed a structured platform that made complex functionalities easy to use.",
     rating: 5,
   },
-
   {
     id: 3,
     name: "Priya Singh",
@@ -60,14 +58,16 @@ function TypingText({ text }) {
   }, [text]);
 
   useEffect(() => {
-    if (index >= text.length) return;
+    if (index >= text.length) {
+      return undefined;
+    }
 
-    const timer = setTimeout(() => {
-      setDisplayText((prev) => prev + text[index]);
-      setIndex((prev) => prev + 1);
+    const timer = window.setTimeout(() => {
+      setDisplayText((previous) => previous + text[index]);
+      setIndex((previous) => previous + 1);
     }, 16);
 
-    return () => clearTimeout(timer);
+    return () => window.clearTimeout(timer);
   }, [index, text]);
 
   return (
@@ -76,18 +76,129 @@ function TypingText({ text }) {
 
       {index < text.length && (
         <span
+          aria-hidden="true"
           className="
             ml-1
             inline-block
             h-3.5
             w-[2px]
             animate-pulse
-            bg-[#086FFD]
             align-middle
+            bg-[#086FFD]
           "
         />
       )}
     </span>
+  );
+}
+
+/* ============================================================
+   PROFILE IMAGE
+============================================================ */
+
+function ProfileImage({ item, small = false }) {
+  const initials = item.name
+    .split(" ")
+    .map((word) => word[0])
+    .join("")
+    .slice(0, 2)
+    .toUpperCase();
+
+  return (
+    <div
+      className={
+        small
+          ? `
+            h-6
+            w-6
+            overflow-hidden
+            rounded-full
+            border-2
+            border-[#191b1f]
+            bg-white
+          `
+          : `
+            relative
+            h-11
+            w-11
+            shrink-0
+            overflow-hidden
+            rounded-full
+            bg-[#086FFD]/10
+            ring-2
+            ring-[#086FFD]/10
+          `
+      }
+    >
+      {item.image ? (
+        <img
+          src={item.image}
+          alt={`${item.name} profile`}
+          loading="lazy"
+          onError={(event) => {
+            event.currentTarget.style.display = "none";
+          }}
+          className="
+            block
+            h-full
+            w-full
+            object-cover
+            object-center
+          "
+        />
+      ) : (
+        <div
+          className="
+            flex
+            h-full
+            w-full
+            items-center
+            justify-center
+            bg-[#086FFD]
+            text-xs
+            font-bold
+            text-white
+          "
+        >
+          {initials}
+        </div>
+      )}
+    </div>
+  );
+}
+
+/* ============================================================
+   RATING
+============================================================ */
+
+function Rating({ rating = 5 }) {
+  const safeRating = Math.min(
+    5,
+    Math.max(0, Number(rating) || 0)
+  );
+
+  return (
+    <div className="flex items-center gap-1">
+      {Array.from({ length: 5 }).map((_, index) => (
+        <Star
+          key={index}
+          size={13}
+          fill={index < safeRating ? "currentColor" : "none"}
+          className="text-[#086FFD]"
+        />
+      ))}
+
+      <span
+        className="
+          ml-1
+          text-[10px]
+          font-semibold
+          text-[#191b1f]/35
+        "
+      >
+        {safeRating.toFixed(1)}
+      </span>
+    </div>
   );
 }
 
@@ -114,11 +225,7 @@ function TestimonialCard({ item, index }) {
         duration: 0.5,
         delay: index * 0.08,
       }}
-      className="
-        group
-        relative
-        w-full
-      "
+      className="group relative w-full"
     >
       <div
         className="
@@ -132,15 +239,12 @@ function TestimonialCard({ item, index }) {
           border-[#191b1f]/10
           bg-white
           p-5
-
           shadow-[0_12px_40px_rgba(15,23,42,0.08)]
-
           transition-all
           duration-300
-
+          group-hover:-translate-y-1
           group-hover:border-[#086FFD]/25
           group-hover:shadow-[0_18px_45px_rgba(8,111,253,0.12)]
-
           sm:p-6
         "
       >
@@ -150,62 +254,7 @@ function TestimonialCard({ item, index }) {
 
         <div className="flex items-center justify-between gap-4">
           <div className="flex min-w-0 items-center gap-3">
-
-            {/* PROFILE IMAGE */}
-
-            <div
-              className="
-                relative
-                h-11
-                w-11
-                shrink-0
-                overflow-hidden
-                rounded-full
-                bg-[#086FFD]/10
-                ring-2
-                ring-[#086FFD]/10
-              "
-            >
-              {item.image ? (
-                <img
-                  src={item.image}
-                  alt={`${item.name} profile`}
-                  loading="lazy"
-                  className="
-                    block
-                    h-full
-                    w-full
-                    object-cover
-                    object-center
-                    transition-transform
-                    duration-500
-                    group-hover:scale-105
-                  "
-                />
-              ) : (
-                <div
-                  className="
-                    flex
-                    h-full
-                    w-full
-                    items-center
-                    justify-center
-                    bg-[#086FFD]
-                    text-xs
-                    font-bold
-                    text-white
-                  "
-                >
-                  {item.name
-                    .split(" ")
-                    .map((word) => word[0])
-                    .join("")
-                    .slice(0, 2)}
-                </div>
-              )}
-            </div>
-
-            {/* USER INFO */}
+            <ProfileImage item={item} />
 
             <div className="min-w-0">
               <h3
@@ -246,10 +295,8 @@ function TestimonialCard({ item, index }) {
               rounded-xl
               bg-[#086FFD]/10
               text-[#086FFD]
-
               transition-all
               duration-300
-
               group-hover:bg-[#086FFD]
               group-hover:text-white
             "
@@ -262,26 +309,8 @@ function TestimonialCard({ item, index }) {
             RATING
         ================================================== */}
 
-        <div className="mt-5 flex items-center gap-1">
-          {[...Array(item.rating)].map((_, starIndex) => (
-            <Star
-              key={starIndex}
-              size={13}
-              fill="currentColor"
-              className="text-[#086FFD]"
-            />
-          ))}
-
-          <span
-            className="
-              ml-1
-              text-[10px]
-              font-semibold
-              text-[#191b1f]/35
-            "
-          >
-            5.0
-          </span>
+        <div className="mt-5">
+          <Rating rating={item.rating} />
         </div>
 
         {/* ==================================================
@@ -337,10 +366,8 @@ function TestimonialCard({ item, index }) {
               rounded-full
               bg-[#191b1f]/5
               text-[#191b1f]/40
-
               transition-all
               duration-300
-
               group-hover:bg-[#086FFD]/10
               group-hover:text-[#086FFD]
             "
@@ -354,6 +381,7 @@ function TestimonialCard({ item, index }) {
         ================================================== */}
 
         <div
+          aria-hidden="true"
           className="
             absolute
             bottom-0
@@ -372,7 +400,7 @@ function TestimonialCard({ item, index }) {
 }
 
 /* ============================================================
-   TESTIMONIALS
+   TESTIMONIALS SECTION
 ============================================================ */
 
 export default function Testimonials() {
@@ -383,10 +411,9 @@ export default function Testimonials() {
         overflow-hidden
         bg-[#191b1f]
         py-12
-
         sm:py-14
         md:py-16
-        lg:py-18
+        lg:py-[72px]
       "
     >
       {/* ======================================================
@@ -394,6 +421,7 @@ export default function Testimonials() {
       ====================================================== */}
 
       <div
+        aria-hidden="true"
         className="
           pointer-events-none
           absolute
@@ -402,12 +430,13 @@ export default function Testimonials() {
           h-64
           w-64
           rounded-full
-          bg-[#086FFD]/6
+          bg-[#086FFD]/[0.06]
           blur-3xl
         "
       />
 
       <div
+        aria-hidden="true"
         className="
           pointer-events-none
           absolute
@@ -416,7 +445,7 @@ export default function Testimonials() {
           h-64
           w-64
           rounded-full
-          bg-[#086FFD]/6
+          bg-[#086FFD]/[0.06]
           blur-3xl
         "
       />
@@ -431,12 +460,10 @@ export default function Testimonials() {
           mx-auto
           max-w-7xl
           px-5
-
           sm:px-7
           lg:px-8
         "
       >
-
         {/* ====================================================
             HEADER
         ==================================================== */}
@@ -456,11 +483,7 @@ export default function Testimonials() {
           transition={{
             duration: 0.55,
           }}
-          className="
-            mx-auto
-            max-w-2xl
-            text-center
-          "
+          className="mx-auto max-w-2xl text-center"
         >
           {/* BADGE */}
 
@@ -483,7 +506,6 @@ export default function Testimonials() {
             "
           >
             <Sparkles size={13} />
-
             CLIENT STORIES
           </div>
 
@@ -496,7 +518,6 @@ export default function Testimonials() {
               leading-tight
               tracking-tight
               text-white
-
               sm:text-4xl
               md:text-[44px]
             "
@@ -523,20 +544,18 @@ export default function Testimonials() {
               text-[11px]
               leading-5
               text-slate-400
-
               sm:text-xs
               md:text-sm
             "
           >
-            Real experiences from businesses that trusted CodeCPS
-            Technologies to build their digital products and grow
-            their online presence.
+            Real experiences from businesses that trusted
+            CodeCPS Technologies to build their digital products
+            and grow their online presence.
           </p>
         </motion.div>
 
         {/* ====================================================
-            CARDS
-            NO MARQUEE / NO HORIZONTAL SCROLL
+            TESTIMONIAL CARDS
         ==================================================== */}
 
         <div
@@ -545,9 +564,7 @@ export default function Testimonials() {
             grid
             grid-cols-1
             gap-4
-
             sm:grid-cols-2
-
             lg:grid-cols-3
           "
         >
@@ -580,11 +597,7 @@ export default function Testimonials() {
             delay: 0.15,
             duration: 0.45,
           }}
-          className="
-            mt-6
-            flex
-            justify-center
-          "
+          className="mt-6 flex justify-center"
         >
           <div
             className="
@@ -603,53 +616,11 @@ export default function Testimonials() {
 
             <div className="flex -space-x-2">
               {testimonials.map((item) => (
-                <div
+                <ProfileImage
                   key={item.id}
-                  className="
-                    h-6
-                    w-6
-                    overflow-hidden
-                    rounded-full
-                    border-2
-                    border-[#191b1f]
-                    bg-white
-                  "
-                >
-                  {item.image ? (
-                    <img
-                      src={item.image}
-                      alt={`${item.name} profile`}
-                      loading="lazy"
-                      className="
-                        block
-                        h-full
-                        w-full
-                        object-cover
-                        object-center
-                      "
-                    />
-                  ) : (
-                    <div
-                      className="
-                        flex
-                        h-full
-                        w-full
-                        items-center
-                        justify-center
-                        bg-[#086FFD]
-                        text-[7px]
-                        font-bold
-                        text-white
-                      "
-                    >
-                      {item.name
-                        .split(" ")
-                        .map((word) => word[0])
-                        .join("")
-                        .slice(0, 2)}
-                    </div>
-                  )}
-                </div>
+                  item={item}
+                  small
+                />
               ))}
             </div>
 
@@ -657,9 +628,9 @@ export default function Testimonials() {
 
             <div className="border-l border-white/10 pl-3">
               <div className="flex items-center gap-1">
-                {[1, 2, 3, 4, 5].map((star) => (
+                {Array.from({ length: 5 }).map((_, index) => (
                   <Star
-                    key={star}
+                    key={index}
                     size={11}
                     fill="currentColor"
                     className="text-[#086FFD]"
