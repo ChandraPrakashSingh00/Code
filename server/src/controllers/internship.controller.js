@@ -1,6 +1,6 @@
 const Internship = require("../models/Internship");
 const getNextCertificateId = require("../utils/certificateId");
-const { calculateEndDate } = require("../utils/DurationHelper");
+const { calculateEndDate } = require("../utils/durationHelper");
 
 /*
 ============================================================

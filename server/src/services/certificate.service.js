@@ -15,7 +15,7 @@ const {
 } = require("../config/company");
 
 // Shared date calculation logic
-const { calculateEndDate } = require("../utils/DurationHelper");
+const { calculateEndDate } = require("../utils/durationHelper");
 
 /*
 ============================================================
