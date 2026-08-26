@@ -41,7 +41,7 @@ const testimonials = [
     company: "DigitalEdge",
     image: "/testimonial/priya.jpg",
     review:
-      "Working with CodeCPS Technologies was a great experience.Their team understood our requirements clearly and delivered a professional, reliable solution with excellent attention to detail.",
+      "Working with CodeCPS Technologies was a great experience. Their team understood our requirements clearly and delivered a professional, reliable solution with excellent attention to detail.",
     rating: 5,
   },
 ];
@@ -83,6 +83,7 @@ function TypingText({ text }) {
             w-[2px]
             animate-pulse
             bg-[#086FFD]
+            align-middle
           "
         />
       )}
@@ -99,7 +100,7 @@ function TestimonialCard({ item, index }) {
     <motion.article
       initial={{
         opacity: 0,
-        y: 25,
+        y: 20,
       }}
       whileInView={{
         opacity: 1,
@@ -116,11 +117,7 @@ function TestimonialCard({ item, index }) {
       className="
         group
         relative
-        w-[300px]
-        shrink-0
-
-        sm:w-[330px]
-        md:w-auto
+        w-full
       "
     >
       <div
@@ -141,9 +138,8 @@ function TestimonialCard({ item, index }) {
           transition-all
           duration-300
 
-          group-hover:-translate-y-1.5
           group-hover:border-[#086FFD]/25
-          group-hover:shadow-[0_22px_50px_rgba(8,111,253,0.13)]
+          group-hover:shadow-[0_18px_45px_rgba(8,111,253,0.12)]
 
           sm:p-6
         "
@@ -176,12 +172,14 @@ function TestimonialCard({ item, index }) {
                   alt={`${item.name} profile`}
                   loading="lazy"
                   className="
+                    block
                     h-full
                     w-full
                     object-cover
+                    object-center
                     transition-transform
                     duration-500
-                    group-hover:scale-110
+                    group-hover:scale-105
                   "
                 />
               ) : (
@@ -538,40 +536,27 @@ export default function Testimonials() {
 
         {/* ====================================================
             CARDS
+            NO MARQUEE / NO HORIZONTAL SCROLL
         ==================================================== */}
 
         <div
           className="
             mt-8
-            flex
+            grid
+            grid-cols-1
             gap-4
-            overflow-x-auto
-            pb-3
 
-            snap-x
-            snap-mandatory
+            sm:grid-cols-2
 
-            scrollbar-hide
-
-            md:grid
-            md:grid-cols-3
-            md:overflow-visible
-            md:pb-0
+            lg:grid-cols-3
           "
         >
           {testimonials.map((item, index) => (
-            <div
+            <TestimonialCard
               key={item.id}
-              className="
-                snap-start
-                md:min-w-0
-              "
-            >
-              <TestimonialCard
-                item={item}
-                index={index}
-              />
-            </div>
+              item={item}
+              index={index}
+            />
           ))}
         </div>
 
@@ -636,9 +621,11 @@ export default function Testimonials() {
                       alt={`${item.name} profile`}
                       loading="lazy"
                       className="
+                        block
                         h-full
                         w-full
                         object-cover
+                        object-center
                       "
                     />
                   ) : (

@@ -1,5 +1,6 @@
 const Internship = require("../models/Internship");
 const getNextCertificateId = require("../utils/certificateId");
+const { calculateEndDate } = require("../utils/durationHelper");
 
 /*
 ============================================================
@@ -21,17 +22,10 @@ const applyInternship = async (req, res) => {
       message,
     } = req.body;
 
-    if (
-      !fullName ||
-      !email ||
-      !phone ||
-      !domain ||
-      !duration
-    ) {
+    if (!fullName || !email || !phone || !domain || !duration) {
       return res.status(400).json({
         success: false,
-        message:
-          "fullName, email, phone, domain and duration are required",
+        message: "fullName, email, phone, domain and duration are required",
       });
     }
 
@@ -70,9 +64,7 @@ const applyInternship = async (req, res) => {
 
 const getAllApplications = async (req, res) => {
   try {
-    const applications = await Internship.find().sort({
-      createdAt: -1,
-    });
+    const applications = await Internship.find().sort({ createdAt: -1 });
 
     return res.status(200).json({
       success: true,
@@ -93,20 +85,22 @@ const getAllApplications = async (req, res) => {
 ============================================================
   UPDATE APPLICATION STATUS (ADMIN)
   PATCH /api/internship/admin/:id/status
+
+  Date logic:
+  - startDate is set from req.body if provided, else on first
+    move into "ongoing" or "completed" it defaults to "now".
+  - endDate is auto-calculated as startDate + internship.duration
+    (months) so it always matches the internship's real duration.
+    Any explicit endDate in req.body is ignored on purpose.
 ============================================================
 */
 
 const updateStatus = async (req, res) => {
   try {
     const { id } = req.params;
-    const { status, startDate, endDate } = req.body;
+    const { status, startDate } = req.body;
 
-    const allowedStatus = [
-      "applied",
-      "ongoing",
-      "completed",
-      "rejected",
-    ];
+    const allowedStatus = ["applied", "ongoing", "completed", "rejected"];
 
     if (!allowedStatus.includes(status)) {
       return res.status(400).json({
@@ -115,16 +109,7 @@ const updateStatus = async (req, res) => {
       });
     }
 
-    const update = { status };
-
-    if (startDate) update.startDate = startDate;
-    if (endDate) update.endDate = endDate;
-
-    const internship = await Internship.findByIdAndUpdate(
-      id,
-      update,
-      { new: true }
-    );
+    const internship = await Internship.findById(id);
 
     if (!internship) {
       return res.status(404).json({
@@ -132,6 +117,36 @@ const updateStatus = async (req, res) => {
         message: "Application not found",
       });
     }
+
+    internship.status = status;
+
+    // explicit body value > existing saved value > now
+    // (only auto-set "now" when actually starting/completing)
+    let effectiveStartDate = startDate || internship.startDate;
+
+    if (
+      !effectiveStartDate &&
+      (status === "ongoing" || status === "completed")
+    ) {
+      effectiveStartDate = new Date();
+    }
+
+    if (effectiveStartDate) {
+      internship.startDate = effectiveStartDate;
+
+      const result = calculateEndDate(effectiveStartDate, internship.duration);
+
+      if (!result) {
+        return res.status(400).json({
+          success: false,
+          message: `Could not calculate end date — internship duration "${internship.duration}" is invalid`,
+        });
+      }
+
+      internship.endDate = result.endDate;
+    }
+
+    await internship.save();
 
     return res.status(200).json({
       success: true,
@@ -152,8 +167,15 @@ const updateStatus = async (req, res) => {
 ============================================================
   GENERATE / ISSUE CERTIFICATE (ADMIN)
   POST /api/internship/admin/:id/certificate
-  Only allowed once status is "completed". Certificate ID
-  is generated once and reused on subsequent calls.
+
+  Only allowed once status is "completed". Certificate ID is
+  generated once and reused on subsequent calls.
+
+  ⭐ FIX: safety net for startDate/endDate.
+  Agar kisi wajah se status seedha "completed" ho gaya tha aur
+  updateStatus() flow se startDate set nahi hua (jaise purani
+  entry, ya direct DB edit), to yahan par usse fill kar dete
+  hain — taaki certificate pe date kabhi bhi blank ("—") na aaye.
 ============================================================
 */
 
@@ -173,9 +195,24 @@ const issueCertificate = async (req, res) => {
     if (internship.status !== "completed") {
       return res.status(400).json({
         success: false,
-        message:
-          "Certificate can only be issued once status is 'completed'",
+        message: "Certificate can only be issued once status is 'completed'",
       });
+    }
+
+    // ⭐ FIX 1: startDate missing ho to fallback lagao
+    if (!internship.startDate) {
+      internship.startDate = internship.createdAt || new Date();
+    }
+
+    // ⭐ FIX 2: endDate missing ho to startDate + duration se calculate karo
+    if (!internship.endDate) {
+      const result = calculateEndDate(
+        internship.startDate,
+        internship.duration
+      );
+      if (result) {
+        internship.endDate = result.endDate;
+      }
     }
 
     if (!internship.certificateId) {
