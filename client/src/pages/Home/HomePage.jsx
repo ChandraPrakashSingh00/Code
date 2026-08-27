@@ -4,7 +4,7 @@ import { ServicesSection } from "../../components/services";
 import FAQSection from "../../components/faq/FAQSection";
 // import DevProcess from "../../components/Development/DevProcess"
 import Testimonials from "../../components/Testimonial/Testimonial";
-import UdyamRegistration from "../../components/UdyamRegistration/UdyamRegistration";
+
 import SEO, { SITE_URL, SITE_NAME } from "../../components/SEO/SEO";
 
 const homeSchema = {
@@ -41,7 +41,7 @@ function HomePage() {
       <ServicesSection />
       {/* <DevProcess/> */}
       <Testimonials/>
-      <UdyamRegistration/>
+      
       <FAQSection />
      
     </>

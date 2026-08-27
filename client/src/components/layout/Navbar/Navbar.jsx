@@ -11,6 +11,7 @@ import {
   ArrowRight,
   Menu,
   X,
+  Sparkles,
 } from "lucide-react";
 
 function Navbar() {
@@ -30,17 +31,6 @@ function Navbar() {
   const handleLogoClick = (event) => {
     tapCountRef.current += 1;
 
-    console.log(
-      "Logo click count:",
-      tapCountRef.current
-    );
-
-    /*
-    ----------------------------------------------------------
-      5 CLICKS = ADMIN LOGIN
-    ----------------------------------------------------------
-    */
-
     if (tapCountRef.current >= 5) {
       event.preventDefault();
 
@@ -52,17 +42,10 @@ function Navbar() {
       }
 
       setMobileOpen(false);
-
       navigate("/admin/login");
 
       return;
     }
-
-    /*
-    ----------------------------------------------------------
-      RESET AFTER 3 SECONDS
-    ----------------------------------------------------------
-    */
 
     if (tapTimerRef.current) {
       clearTimeout(tapTimerRef.current);
@@ -72,35 +55,70 @@ function Navbar() {
       tapCountRef.current = 0;
       tapTimerRef.current = null;
     }, 3000);
-
-    /*
-    IMPORTANT:
-    Do NOT preventDefault here.
-
-    Therefore:
-    1 click = normal "/" navigation
-    2 click = normal "/" navigation
-    3 click = normal "/" navigation
-    4 click = normal "/" navigation
-
-    Only 5th click is intercepted.
-    */
   };
 
+  /*
+  ============================================================
+    NAVIGATION ITEMS
+  ============================================================
+  */
+
   const navItems = [
-    { name: "Home", href: "/" },
-    { name: "About Us", href: "/about" },
-    { name: "Services", href: "/service" },
-    { name: "Product", href: "/product" },
-    { name: "Careers", href: "/career" },
-    { name: "Internship", href: "/internship" },
-    { name: "Blog", href: "/blog" },
-    { name: "Contact", href: "/contact" },
+    {
+      name: "Home",
+      href: "/",
+      number: "01",
+      description: "Back to our homepage",
+    },
+    {
+      name: "About Us",
+      href: "/about",
+      number: "02",
+      description: "Know more about CodeCPS",
+    },
+    {
+      name: "Services",
+      href: "/service",
+      number: "03",
+      description: "Explore what we offer",
+    },
+    {
+      name: "Product",
+      href: "/product",
+      number: "04",
+      description: "Our digital products",
+    },
+    {
+      name: "Careers",
+      href: "/career",
+      number: "05",
+      description: "Build your career with us",
+    },
+    {
+      name: "Internship",
+      href: "/internship",
+      number: "06",
+      description: "Start your journey",
+    },
+    {
+      name: "Blog",
+      href: "/blog",
+      number: "07",
+      description: "Insights & latest updates",
+    },
+    {
+      name: "Contact",
+      href: "/contact",
+      number: "08",
+      description: "Let's work together",
+    },
   ];
 
-  /* ============================================================
-     CLOSE MOBILE MENU ON DESKTOP
-  ============================================================ */
+  /*
+  ============================================================
+    CLOSE ON DESKTOP
+  ============================================================
+  */
 
   useEffect(() => {
     const handleResize = () => {
@@ -119,9 +137,11 @@ function Navbar() {
     };
   }, []);
 
-  /* ============================================================
-     CLOSE MENU WITH ESC
-  ============================================================ */
+  /*
+  ============================================================
+    ESC TO CLOSE
+  ============================================================
+  */
 
   useEffect(() => {
     const handleEscape = (event) => {
@@ -143,9 +163,11 @@ function Navbar() {
     };
   }, []);
 
-  /* ============================================================
-     BODY SCROLL LOCK
-  ============================================================ */
+  /*
+  ============================================================
+    BODY SCROLL LOCK
+  ============================================================
+  */
 
   useEffect(() => {
     if (mobileOpen) {
@@ -159,9 +181,11 @@ function Navbar() {
     };
   }, [mobileOpen]);
 
-  /* ============================================================
-     CLEANUP TAP TIMER
-  ============================================================ */
+  /*
+  ============================================================
+    CLEANUP
+  ============================================================
+  */
 
   useEffect(() => {
     return () => {
@@ -171,9 +195,11 @@ function Navbar() {
     };
   }, []);
 
-  /* ============================================================
-     CLOSE MOBILE MENU
-  ============================================================ */
+  /*
+  ============================================================
+    CLOSE MENU
+  ============================================================
+  */
 
   const closeMobileMenu = () => {
     setMobileOpen(false);
@@ -186,6 +212,7 @@ function Navbar() {
       ===================================================== */}
 
       <header className="fixed left-0 right-0 top-0 z-[100] w-full bg-white">
+
         <nav
           className="
             relative
@@ -212,9 +239,10 @@ function Navbar() {
             2xl:px-20
           "
         >
-          {/* =====================================================
+
+          {/* =================================================
               LOGO
-          ===================================================== */}
+          ================================================= */}
 
           <Link
             to="/"
@@ -224,13 +252,10 @@ function Navbar() {
               flex
               shrink-0
               items-center
-              justify-start
               outline-none
 
               lg:ml-8
-
               xl:ml-10
-
               2xl:ml-12
             "
           >
@@ -246,24 +271,21 @@ function Navbar() {
                 object-contain
                 transition-transform
                 duration-300
+
                 group-hover:scale-[1.02]
 
                 sm:w-[140px]
-
                 md:w-[140px]
-
                 lg:w-[155px]
-
                 xl:w-[165px]
-
                 2xl:w-[175px]
               "
             />
           </Link>
 
-          {/* =====================================================
+          {/* =================================================
               DESKTOP NAVIGATION
-          ===================================================== */}
+          ================================================= */}
 
           <div
             className="
@@ -309,9 +331,9 @@ function Navbar() {
             ))}
           </div>
 
-          {/* =====================================================
+          {/* =================================================
               DESKTOP CTA
-          ===================================================== */}
+          ================================================= */}
 
           <Link
             to="/contact"
@@ -356,22 +378,19 @@ function Navbar() {
               className="
                 transition-transform
                 duration-300
-
                 group-hover:translate-x-1
               "
             />
           </Link>
 
-          {/* =====================================================
+          {/* =================================================
               MOBILE MENU BUTTON
-          ===================================================== */}
+          ================================================= */}
 
           <button
             type="button"
             onClick={() =>
-              setMobileOpen(
-                (prev) => !prev
-              )
+              setMobileOpen((prev) => !prev)
             }
             aria-label={
               mobileOpen
@@ -380,15 +399,17 @@ function Navbar() {
             }
             aria-expanded={mobileOpen}
             className="
+              relative
+              z-[130]
               flex
-              h-9
-              w-9
+              h-10
+              w-10
               shrink-0
               items-center
               justify-center
-              rounded-lg
+              rounded-xl
               border
-              border-[#191b1f]/15
+              border-[#191b1f]/10
               bg-white
               text-[#191b1f]
               outline-none
@@ -404,133 +425,720 @@ function Navbar() {
               lg:hidden
             "
           >
-            {mobileOpen ? (
-              <X
-                size={20}
-                strokeWidth={2}
-              />
-            ) : (
-              <Menu
-                size={20}
-                strokeWidth={2}
-              />
-            )}
+            <span
+              className="
+                flex
+                items-center
+                justify-center
+                transition-transform
+                duration-300
+              "
+            >
+              {mobileOpen ? (
+                <X
+                  size={21}
+                  strokeWidth={2}
+                />
+              ) : (
+                <Menu
+                  size={21}
+                  strokeWidth={2}
+                />
+              )}
+            </span>
           </button>
         </nav>
 
         {/* =====================================================
-            MOBILE MENU
+            PREMIUM MOBILE MENU
         ===================================================== */}
 
         <div
           className={`
-            overflow-hidden
-            border-b
-            border-[#191b1f]/10
-            bg-white
-            shadow-[0_18px_40px_rgba(15,23,42,0.08)]
-            transition-all
-            duration-300
+            fixed
+            inset-0
+            z-[115]
+            bg-[#f8fafc]
             lg:hidden
+
+            transition-all
+            duration-500
+            ease-[cubic-bezier(0.22,1,0.36,1)]
 
             ${
               mobileOpen
-                ? "max-h-[calc(100vh-62px)] opacity-100"
-                : "pointer-events-none max-h-0 opacity-0"
+                ? "visible opacity-100"
+                : "pointer-events-none invisible opacity-0"
             }
           `}
         >
+
+          {/* =================================================
+              BACKGROUND DECORATION
+          ================================================= */}
+
           <div
             className="
-              max-h-[calc(100vh-62px)]
-              overflow-y-auto
-              px-4
-              pb-5
-              pt-1
-
-              sm:px-5
-              sm:pb-6
-
-              md:px-6
+              pointer-events-none
+              absolute
+              inset-0
+              overflow-hidden
             "
           >
+
+            {/* Top Blue Glow */}
+            <div
+              className="
+                absolute
+                -right-[140px]
+                -top-[140px]
+                h-[380px]
+                w-[380px]
+                rounded-full
+                bg-[#086FFD]/10
+                blur-[80px]
+              "
+            />
+
+            {/* Bottom Blue Glow */}
+            <div
+              className="
+                absolute
+                -bottom-[160px]
+                -left-[160px]
+                h-[400px]
+                w-[400px]
+                rounded-full
+                bg-[#086FFD]/[0.07]
+                blur-[90px]
+              "
+            />
+
+            {/* Small Dot */}
+            <div
+              className="
+                absolute
+                right-[20%]
+                top-[28%]
+                h-2
+                w-2
+                rounded-full
+                bg-[#086FFD]/30
+              "
+            />
+
+            {/* Grid */}
+            <div
+              className="
+                absolute
+                inset-0
+                opacity-[0.025]
+                [background-image:linear-gradient(#191b1f_1px,transparent_1px),linear-gradient(90deg,#191b1f_1px,transparent_1px)]
+                [background-size:32px_32px]
+              "
+            />
+
+          </div>
+
+          {/* =================================================
+              MENU WRAPPER
+          ================================================= */}
+
+          <div
+            className="
+              relative
+              flex
+              h-full
+              w-full
+              flex-col
+              overflow-y-auto
+              pt-[62px]
+
+              sm:pt-[64px]
+            "
+          >
+
             {/* =================================================
-                MOBILE LINKS
+                TOP MENU HEADER
             ================================================= */}
 
-            <div className="flex flex-col">
-              {navItems.map((item) => (
-                <Link
-                  key={item.name}
-                  to={item.href}
-                  onClick={closeMobileMenu}
-                  className="
-                    flex
-                    min-h-[46px]
-                    items-center
-                    border-b
-                    border-[#191b1f]/10
-                    py-3
-                    text-[15px]
-                    font-medium
-                    text-[#191b1f]
-                    outline-none
-                    transition-colors
-                    duration-300
+            <div
+              className={`
+                border-b
+                border-[#191b1f]/10
+                bg-white/80
+                px-5
+                py-5
+                backdrop-blur-xl
 
-                    hover:text-[#086FFD]
+                sm:px-7
+                sm:py-6
+
+                md:px-10
+                md:py-7
+
+                transition-all
+                duration-500
+
+                ${
+                  mobileOpen
+                    ? "translate-y-0 opacity-100"
+                    : "-translate-y-5 opacity-0"
+                }
+              `}
+            >
+
+              <div
+                className="
+                  mx-auto
+                  flex
+                  max-w-5xl
+                  items-end
+                  justify-between
+                "
+              >
+
+                <div>
+
+                  <div
+                    className="
+                      mb-2
+                      flex
+                      items-center
+                      gap-2
+                      text-[10px]
+                      font-bold
+                      uppercase
+                      tracking-[0.2em]
+                      text-[#086FFD]
+
+                      sm:text-[11px]
+                    "
+                  >
+                    <span
+                      className="
+                        h-1.5
+                        w-1.5
+                        rounded-full
+                        bg-[#086FFD]
+                      "
+                    />
+
+                    Navigation
+                  </div>
+
+                  <h2
+                    className="
+                      text-[25px]
+                      font-semibold
+                      leading-none
+                      tracking-[-1px]
+                      text-[#191b1f]
+
+                      sm:text-[30px]
+
+                      md:text-[34px]
+                    "
+                  >
+                    Explore
+                    <span className="text-[#086FFD]">
+                      {" "}CodeCPS
+                    </span>
+                  </h2>
+
+                </div>
+
+                <div
+                  className="
+                    hidden
+                    text-right
+
+                    sm:block
                   "
                 >
-                  {item.name}
-                </Link>
-              ))}
+                  <p
+                    className="
+                      text-[10px]
+                      font-semibold
+                      uppercase
+                      tracking-[0.18em]
+                      text-[#191b1f]/30
+                    "
+                  >
+                    MENU
+                  </p>
+
+                  <p
+                    className="
+                      mt-1
+                      text-xs
+                      text-[#191b1f]/45
+                    "
+                  >
+                    Choose your destination
+                  </p>
+                </div>
+
+              </div>
+
             </div>
 
             {/* =================================================
-                MOBILE CTA
+                NAVIGATION AREA
             ================================================= */}
 
-            <Link
-              to="/contact"
-              onClick={closeMobileMenu}
+            <div
               className="
-                group
-                mt-5
-                flex
-                h-11
+                mx-auto
                 w-full
-                items-center
-                justify-center
-                gap-2
-                rounded-lg
-                bg-[#086FFD]
-                text-sm
-                font-semibold
-                text-white
-                shadow-[0_8px_20px_rgba(8,111,253,0.18)]
-                transition-all
-                duration-300
+                max-w-5xl
+                px-5
+                py-5
 
-                hover:bg-[#075ed6]
-                hover:shadow-[0_10px_25px_rgba(8,111,253,0.25)]
+                sm:px-7
+                sm:py-7
 
-                active:scale-[0.99]
+                md:px-10
+                md:py-9
               "
             >
-              Get In Touch
 
-              <ArrowRight
-                size={16}
-                strokeWidth={2}
+              <div
                 className="
-                  transition-transform
-                  duration-300
+                  grid
+                  grid-cols-1
+                  gap-2
 
-                  group-hover:translate-x-1
+                  sm:grid-cols-2
+                  sm:gap-3
+
+                  md:gap-4
                 "
-              />
-            </Link>
+              >
+
+                {navItems.map(
+                  (item, index) => (
+                    <Link
+                      key={item.name}
+                      to={item.href}
+                      onClick={closeMobileMenu}
+                      style={{
+                        transitionDelay:
+                          mobileOpen
+                            ? `${80 + index * 45}ms`
+                            : "0ms",
+                      }}
+                      className={`
+                        group
+                        relative
+                        overflow-hidden
+                        rounded-2xl
+                        border
+                        border-[#191b1f]/10
+                        bg-white
+                        p-4
+                        shadow-[0_4px_20px_rgba(15,23,42,0.025)]
+                        outline-none
+
+                        transition-all
+                        duration-500
+                        ease-[cubic-bezier(0.22,1,0.36,1)]
+
+                        hover:-translate-y-1
+                        hover:border-[#086FFD]/30
+                        hover:shadow-[0_15px_35px_rgba(8,111,253,0.10)]
+
+                        active:scale-[0.985]
+
+                        sm:p-5
+
+                        md:p-6
+
+                        ${
+                          mobileOpen
+                            ? "translate-y-0 opacity-100"
+                            : "translate-y-6 opacity-0"
+                        }
+                      `}
+                    >
+
+                      {/* Blue Hover Line */}
+                      <span
+                        className="
+                          absolute
+                          left-0
+                          top-0
+                          h-full
+                          w-[3px]
+                          origin-bottom
+                          scale-y-0
+                          bg-[#086FFD]
+                          transition-transform
+                          duration-500
+
+                          group-hover:scale-y-100
+                        "
+                      />
+
+                      {/* Card */}
+                      <div
+                        className="
+                          flex
+                          items-center
+                          gap-3.5
+
+                          sm:gap-4
+                        "
+                      >
+
+                        {/* Number */}
+                        <div
+                          className="
+                            flex
+                            h-10
+                            w-10
+                            shrink-0
+                            items-center
+                            justify-center
+                            rounded-xl
+                            bg-[#f3f6fa]
+                            text-[10px]
+                            font-bold
+                            tracking-wider
+                            text-[#191b1f]/35
+                            transition-all
+                            duration-300
+
+                            group-hover:bg-[#086FFD]
+                            group-hover:text-white
+
+                            sm:h-11
+                            sm:w-11
+                          "
+                        >
+                          {item.number}
+                        </div>
+
+                        {/* Content */}
+                        <div className="min-w-0 flex-1">
+
+                          <h3
+                            className="
+                              text-[15px]
+                              font-semibold
+                              tracking-[-0.25px]
+                              text-[#191b1f]
+                              transition-colors
+                              duration-300
+
+                              group-hover:text-[#086FFD]
+
+                              sm:text-[16px]
+
+                              md:text-[17px]
+                            "
+                          >
+                            {item.name}
+                          </h3>
+
+                          <p
+                            className="
+                              mt-1
+                              truncate
+                              text-[10px]
+                              font-medium
+                              text-[#191b1f]/40
+
+                              sm:text-[11px]
+
+                              md:text-xs
+                            "
+                          >
+                            {item.description}
+                          </p>
+
+                        </div>
+
+                        {/* Arrow Circle */}
+                        <div
+                          className="
+                            flex
+                            h-8
+                            w-8
+                            shrink-0
+                            items-center
+                            justify-center
+                            rounded-full
+                            border
+                            border-[#191b1f]/10
+                            text-[#191b1f]/35
+                            transition-all
+                            duration-300
+
+                            group-hover:translate-x-1
+                            group-hover:border-[#086FFD]/20
+                            group-hover:bg-[#086FFD]
+                            group-hover:text-white
+
+                            sm:h-9
+                            sm:w-9
+                          "
+                        >
+                          <ArrowRight
+                            size={15}
+                            strokeWidth={2}
+                          />
+                        </div>
+
+                      </div>
+
+                    </Link>
+                  )
+                )}
+
+              </div>
+
+              {/* =================================================
+                  CTA CARD
+              ================================================= */}
+
+              <div
+                className={`
+                  mt-5
+                  transition-all
+                  delay-[500ms]
+                  duration-500
+
+                  sm:mt-6
+
+                  ${
+                    mobileOpen
+                      ? "translate-y-0 opacity-100"
+                      : "translate-y-6 opacity-0"
+                  }
+                `}
+              >
+
+                <div
+                  className="
+                    relative
+                    overflow-hidden
+                    rounded-2xl
+                    bg-[#191b1f]
+                    p-5
+
+                    sm:p-6
+
+                    md:p-7
+                  "
+                >
+
+                  {/* CTA Glow */}
+                  <div
+                    className="
+                      pointer-events-none
+                      absolute
+                      -right-20
+                      -top-24
+                      h-56
+                      w-56
+                      rounded-full
+                      bg-[#086FFD]/30
+                      blur-[60px]
+                    "
+                  />
+
+                  <div
+                    className="
+                      relative
+                      flex
+                      flex-col
+                      gap-5
+
+                      sm:flex-row
+                      sm:items-center
+                      sm:justify-between
+                    "
+                  >
+
+                    <div>
+
+                      <div
+                        className="
+                          mb-2
+                          flex
+                          items-center
+                          gap-2
+                          text-[10px]
+                          font-semibold
+                          uppercase
+                          tracking-[0.18em]
+                          text-[#086FFD]
+                        "
+                      >
+                        <Sparkles
+                          size={12}
+                          strokeWidth={2}
+                        />
+
+                        Let's create
+                      </div>
+
+                      <h3
+                        className="
+                          text-[18px]
+                          font-semibold
+                          tracking-[-0.4px]
+                          text-white
+
+                          sm:text-[20px]
+
+                          md:text-[21px]
+                        "
+                      >
+                        Have a project in mind?
+                      </h3>
+
+                      <p
+                        className="
+                          mt-1
+                          max-w-md
+                          text-xs
+                          leading-relaxed
+                          text-white/45
+
+                          sm:text-sm
+                        "
+                      >
+                        Let's build something
+                        innovative together.
+                      </p>
+
+                    </div>
+
+                    <Link
+                      to="/contact"
+                      onClick={closeMobileMenu}
+                      className="
+                        group
+                        flex
+                        h-11
+                        w-full
+                        shrink-0
+                        items-center
+                        justify-center
+                        gap-2
+                        rounded-xl
+                        bg-[#086FFD]
+                        px-5
+                        text-sm
+                        font-semibold
+                        text-white
+                        shadow-[0_10px_30px_rgba(8,111,253,0.20)]
+                        transition-all
+                        duration-300
+
+                        hover:-translate-y-0.5
+                        hover:bg-[#1978ff]
+                        hover:shadow-[0_14px_35px_rgba(8,111,253,0.30)]
+
+                        active:scale-[0.98]
+
+                        sm:w-auto
+                      "
+                    >
+                      Get In Touch
+
+                      <ArrowRight
+                        size={16}
+                        strokeWidth={2}
+                        className="
+                          transition-transform
+                          duration-300
+
+                          group-hover:translate-x-1
+                        "
+                      />
+                    </Link>
+
+                  </div>
+
+                </div>
+
+              </div>
+
+              {/* =================================================
+                  FOOTER
+              ================================================= */}
+
+              <div
+                className={`
+                  flex
+                  items-center
+                  justify-between
+                  px-1
+                  pb-4
+                  pt-5
+
+                  transition-all
+                  delay-[600ms]
+                  duration-500
+
+                  ${
+                    mobileOpen
+                      ? "opacity-100"
+                      : "opacity-0"
+                  }
+                `}
+              >
+
+                <div
+                  className="
+                    flex
+                    items-center
+                    gap-2
+                  "
+                >
+                  <span
+                    className="
+                      h-1.5
+                      w-1.5
+                      rounded-full
+                      bg-[#086FFD]
+                    "
+                  />
+
+                  <span
+                    className="
+                      text-[9px]
+                      font-semibold
+                      uppercase
+                      tracking-[0.16em]
+                      text-[#191b1f]/30
+                    "
+                  >
+                    CodeCPS Technologies
+                  </span>
+                </div>
+
+                <span
+                  className="
+                    text-[9px]
+                    font-medium
+                    uppercase
+                    tracking-[0.12em]
+                    text-[#191b1f]/25
+                  "
+                >
+                  © {new Date().getFullYear()}
+                </span>
+
+              </div>
+
+            </div>
+
           </div>
+
         </div>
       </header>
 
