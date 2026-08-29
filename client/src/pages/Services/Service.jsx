@@ -183,13 +183,13 @@ function Services() {
               "@type": "ListItem",
               position: 1,
               name: "Home",
-              item: "https://www.codecps.com/",
+              item: "https://www.codecpstechnologies.in/",
             },
             {
               "@type": "ListItem",
               position: 2,
               name: "Services",
-              item: "https://www.codecps.com/service",
+              item: "https://www.codecpstechnologies.in/service",
             },
           ],
         }}

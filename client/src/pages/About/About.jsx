@@ -1,4 +1,5 @@
 import React from "react";
+import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
 import {
   ArrowRight,
@@ -14,8 +15,15 @@ import {
   Eye,
   Zap,
   Layers3,
+  MapPin,
+  Calendar,
+  UserRound,
+  Award,
+  Flag,
 } from "lucide-react";
-import SEO from "../../components/SEO/SEO";
+import SEO, { SITE_URL } from "../../components/SEO/SEO";
+import { organizationSchema } from "../../data/organizationSchema";
+import { COMPANY } from "../../data/companyInfo";
 
 /* ============================================================
    ANIMATION
@@ -186,28 +194,31 @@ function About() {
       ===================================================== */}
 
       <SEO
-        title="About CodeCPS Technologies - Software Development Company"
-        description="Learn about CodeCPS Technologies, a software development company building scalable websites, mobile apps, custom software and AI solutions."
-        keywords="about CodeCPS Technologies, software development company, web development company, custom software company, AI development company"
+        title="About Us - Founder, Mission & Company Story"
+        description="CodeCPS Technologies was founded on 22 August 2025 by Chandra Prakash Singh in Greater Noida West, UP. Learn our mission, vision, services and journey."
+        keywords="about CodeCPS Technologies, CodeCPS Technologies founder, Chandra Prakash Singh, software development company Greater Noida, custom software company, AI development company"
         path="/about"
-        schema={{
-          "@context": "https://schema.org",
-          "@type": "BreadcrumbList",
-          itemListElement: [
-            {
-              "@type": "ListItem",
-              position: 1,
-              name: "Home",
-              item: "https://www.codecps.com/",
-            },
-            {
-              "@type": "ListItem",
-              position: 2,
-              name: "About",
-              item: "https://www.codecps.com/about",
-            },
-          ],
-        }}
+        schema={[
+          organizationSchema,
+          {
+            "@context": "https://schema.org",
+            "@type": "BreadcrumbList",
+            itemListElement: [
+              {
+                "@type": "ListItem",
+                position: 1,
+                name: "Home",
+                item: `${SITE_URL}/`,
+              },
+              {
+                "@type": "ListItem",
+                position: 2,
+                name: "About",
+                item: `${SITE_URL}/about`,
+              },
+            ],
+          },
+        ]}
       />
 
       {/* =====================================================
@@ -364,6 +375,119 @@ function About() {
             for businesses.
           </motion.p>
 
+        </div>
+      </section>
+
+      {/* =====================================================
+          COMPANY AT A GLANCE
+          (Founded / Founder / Headquarters — kept identical to
+          the Organization JSON-LD so Google sees consistent info)
+      ===================================================== */}
+
+      <section
+        className="
+          border-b
+          border-[#191b1f]/8
+          bg-[#f8fafc]
+          px-5
+          py-8
+
+          sm:px-8
+
+          lg:px-10
+        "
+      >
+        <div
+          className="
+            mx-auto
+            grid
+            max-w-[1200px]
+            grid-cols-1
+            gap-6
+
+            sm:grid-cols-3
+          "
+        >
+          <div className="flex items-start gap-3">
+            <div
+              className="
+                flex
+                h-10
+                w-10
+                shrink-0
+                items-center
+                justify-center
+                rounded-xl
+                bg-[#086FFD]/10
+                text-[#086FFD]
+              "
+            >
+              <Calendar size={18} />
+            </div>
+
+            <div>
+              <p className="text-[11px] font-bold uppercase tracking-[0.14em] text-[#191b1f]/40">
+                Founded
+              </p>
+              <p className="mt-1 text-sm font-semibold text-[#191b1f]">
+                {COMPANY.foundingDateDisplay}
+              </p>
+            </div>
+          </div>
+
+          <div className="flex items-start gap-3">
+            <div
+              className="
+                flex
+                h-10
+                w-10
+                shrink-0
+                items-center
+                justify-center
+                rounded-xl
+                bg-[#086FFD]/10
+                text-[#086FFD]
+              "
+            >
+              <UserRound size={18} />
+            </div>
+
+            <div>
+              <p className="text-[11px] font-bold uppercase tracking-[0.14em] text-[#191b1f]/40">
+                Founder &amp; Owner
+              </p>
+              <p className="mt-1 text-sm font-semibold text-[#191b1f]">
+                {COMPANY.founder.name}
+              </p>
+            </div>
+          </div>
+
+          <div className="flex items-start gap-3">
+            <div
+              className="
+                flex
+                h-10
+                w-10
+                shrink-0
+                items-center
+                justify-center
+                rounded-xl
+                bg-[#086FFD]/10
+                text-[#086FFD]
+              "
+            >
+              <MapPin size={18} />
+            </div>
+
+            <div>
+              <p className="text-[11px] font-bold uppercase tracking-[0.14em] text-[#191b1f]/40">
+                Headquarters
+              </p>
+              <p className="mt-1 text-sm font-semibold text-[#191b1f]">
+                Greater Noida West, Uttar Pradesh, India
+              </p>
+            </div>
+          </div>
         </div>
       </section>
 
@@ -559,7 +683,8 @@ function About() {
               "
             >
               {services.slice(0, 4).map((service) => (
-                <div
+                <Link
+                  to="/service"
                   key={service}
                   className="
                     flex
@@ -573,6 +698,9 @@ function About() {
                     py-2.5
                     text-xs
                     text-white/85
+                    transition-colors
+                    duration-300
+                    hover:bg-white/15
                   "
                 >
                   <CheckCircle2
@@ -581,7 +709,7 @@ function About() {
                   />
 
                   {service}
-                </div>
+                </Link>
               ))}
             </div>
           </motion.div>
@@ -769,7 +897,8 @@ function About() {
                 "
               >
                 {services.map((service) => (
-                  <div
+                  <Link
+                    to="/service"
                     key={service}
                     className="
                       flex
@@ -781,6 +910,10 @@ function About() {
                       bg-[#f8fafc]
                       px-3.5
                       py-3
+                      transition-colors
+                      duration-300
+                      hover:bg-white
+                      hover:border-[#086FFD]/30
                     "
                   >
                     <CheckCircle2
@@ -797,7 +930,7 @@ function About() {
                     >
                       {service}
                     </span>
-                  </div>
+                  </Link>
                 ))}
               </div>
             </motion.div>
@@ -933,6 +1066,293 @@ function About() {
             </motion.div>
 
           </div>
+        </div>
+      </section>
+
+      {/* =====================================================
+          FOUNDER
+      ===================================================== */}
+
+      <section
+        className="
+          px-5
+          pb-14
+
+          sm:px-8
+          sm:pb-20
+
+          lg:px-10
+          lg:pb-24
+        "
+      >
+        <div className="mx-auto max-w-[1200px]">
+          <motion.div
+            variants={fadeUp}
+            initial="hidden"
+            whileInView="show"
+            viewport={{ once: true }}
+            className="
+              flex
+              flex-col
+              items-start
+              gap-6
+              rounded-[24px]
+              border
+              border-[#191b1f]/8
+              bg-white
+              p-7
+              shadow-[0_10px_35px_rgba(15,23,42,0.04)]
+
+              sm:flex-row
+              sm:items-center
+              sm:p-9
+            "
+          >
+            <div
+              className="
+                flex
+                h-16
+                w-16
+                shrink-0
+                items-center
+                justify-center
+                rounded-2xl
+                bg-[#086FFD]
+                text-white
+              "
+            >
+              <UserRound size={28} />
+            </div>
+
+            <div>
+              <span
+                className="
+                  text-xs
+                  font-bold
+                  uppercase
+                  tracking-[0.16em]
+                  text-[#086FFD]
+                "
+              >
+                Meet the Founder
+              </span>
+
+              <h2
+                className="
+                  mt-2
+                  text-2xl
+                  font-semibold
+                  tracking-tight
+                  text-[#191b1f]
+
+                  sm:text-3xl
+                "
+              >
+                {COMPANY.founder.name}
+              </h2>
+
+              <p
+                className="
+                  mt-1
+                  text-sm
+                  font-medium
+                  text-[#191b1f]/50
+                "
+              >
+                {COMPANY.founder.title}, CodeCPS Technologies
+              </p>
+
+              <p
+                className="
+                  mt-3
+                  max-w-[620px]
+                  text-sm
+                  leading-6
+                  text-[#191b1f]/55
+                "
+              >
+                CodeCPS Technologies was founded by {COMPANY.founder.name} on{" "}
+                {COMPANY.foundingDateDisplay}, based in Greater Noida West,
+                Uttar Pradesh, India.
+              </p>
+            </div>
+          </motion.div>
+        </div>
+      </section>
+
+      {/* =====================================================
+          COMPANY JOURNEY / TIMELINE
+      ===================================================== */}
+
+      <section
+        className="
+          bg-[#f8fafc]
+          px-5
+          py-14
+
+          sm:px-8
+          sm:py-20
+
+          lg:px-10
+          lg:py-24
+        "
+      >
+        <div className="mx-auto max-w-[1200px]">
+          <div>
+            <span
+              className="
+                text-xs
+                font-bold
+                uppercase
+                tracking-[0.16em]
+                text-[#086FFD]
+              "
+            >
+              Our Journey
+            </span>
+
+            <h2
+              className="
+                mt-4
+                max-w-[560px]
+                text-3xl
+                font-semibold
+                leading-tight
+                tracking-tight
+                text-[#191b1f]
+
+                sm:text-4xl
+              "
+            >
+              Company timeline &
+
+              <span className="text-[#086FFD]">
+                {" "}key milestones.
+              </span>
+            </h2>
+          </div>
+
+          <div className="mt-10 space-y-5">
+            {COMPANY.timeline.map((item, index) => (
+              <motion.div
+                key={item.title}
+                variants={fadeUp}
+                initial="hidden"
+                whileInView="show"
+                viewport={{ once: true }}
+                transition={{ delay: index * 0.08 }}
+                className="
+                  flex
+                  gap-5
+                  rounded-[20px]
+                  border
+                  border-[#191b1f]/8
+                  bg-white
+                  p-6
+                  shadow-[0_10px_35px_rgba(15,23,42,0.03)]
+                "
+              >
+                <div
+                  className="
+                    flex
+                    h-11
+                    w-11
+                    shrink-0
+                    items-center
+                    justify-center
+                    rounded-xl
+                    bg-[#086FFD]/10
+                    text-[#086FFD]
+                  "
+                >
+                  <Flag size={19} />
+                </div>
+
+                <div>
+                  <p
+                    className="
+                      text-[11px]
+                      font-bold
+                      uppercase
+                      tracking-[0.14em]
+                      text-[#086FFD]
+                    "
+                  >
+                    {item.date}
+                  </p>
+
+                  <h3
+                    className="
+                      mt-1
+                      text-base
+                      font-semibold
+                      text-[#191b1f]
+                    "
+                  >
+                    {item.title}
+                  </h3>
+
+                  <p
+                    className="
+                      mt-1.5
+                      text-sm
+                      leading-6
+                      text-[#191b1f]/55
+                    "
+                  >
+                    {item.description}
+                  </p>
+                </div>
+              </motion.div>
+            ))}
+          </div>
+
+          {/* KEY ACHIEVEMENTS / RECOGNITION */}
+
+          <motion.div
+            variants={fadeUp}
+            initial="hidden"
+            whileInView="show"
+            viewport={{ once: true }}
+            className="
+              mt-8
+              flex
+              items-start
+              gap-3
+              rounded-[20px]
+              border
+              border-[#191b1f]/8
+              bg-white
+              p-6
+            "
+          >
+            <div
+              className="
+                flex
+                h-11
+                w-11
+                shrink-0
+                items-center
+                justify-center
+                rounded-xl
+                bg-[#086FFD]/10
+                text-[#086FFD]
+              "
+            >
+              <Award size={19} />
+            </div>
+
+            <div>
+              <h3 className="text-base font-semibold text-[#191b1f]">
+                Registered MSME (Udyam)
+              </h3>
+
+              <p className="mt-1.5 text-sm leading-6 text-[#191b1f]/55">
+                CodeCPS Technologies is a registered MSME under Udyam
+                Registration No. {COMPANY.msmeRegistrationNo}.
+              </p>
+            </div>
+          </motion.div>
         </div>
       </section>
 

@@ -289,7 +289,7 @@ function WebDevelopment() {
           provider: {
             "@type": "Organization",
             name: "CodeCPS Technologies",
-            url: "https://www.codecps.com/",
+            url: "https://www.codecpstechnologies.in/",
           },
           description:
             "Modern and scalable web development services for businesses, startups and organizations.",

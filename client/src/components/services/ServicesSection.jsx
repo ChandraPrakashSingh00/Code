@@ -5,6 +5,7 @@ import { services } from "../../data/services";
 function ServicesSection() {
   return (
     <section
+      id="services"
       className="
         relative
         overflow-hidden

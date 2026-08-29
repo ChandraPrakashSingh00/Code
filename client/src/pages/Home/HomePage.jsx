@@ -5,35 +5,18 @@ import FAQSection from "../../components/faq/FAQSection";
 // import DevProcess from "../../components/Development/DevProcess"
 import Testimonials from "../../components/Testimonial/Testimonial";
 
-import SEO, { SITE_URL, SITE_NAME } from "../../components/SEO/SEO";
-
-const homeSchema = {
-  "@context": "https://schema.org",
-  "@type": "Organization",
-  name: SITE_NAME,
-  url: SITE_URL,
-  logo: `${SITE_URL}/logo.png`,
-  description:
-    "CodeCPS Technologies builds custom software, web apps, mobile apps, cloud solutions and AI-powered automation for businesses to grow faster.",
-  sameAs: [],
-};
-
-const websiteSchema = {
-  "@context": "https://schema.org",
-  "@type": "WebSite",
-  name: SITE_NAME,
-  url: SITE_URL,
-};
+import SEO from "../../components/SEO/SEO";
+import { organizationSchema, websiteSchema } from "../../data/organizationSchema";
 
 function HomePage() {
   return (
     <>
       <SEO
         title="Custom Software, Web, Mobile & AI Development Company"
-        description="CodeCPS Technologies: custom web development, mobile apps, cloud solutions and AI automation to help businesses scale faster."
-        keywords="software development company, web development company, mobile app development, cloud solutions, AI automation, custom software development India"
+        description="CodeCPS Technologies is a Greater Noida based software company offering custom software, web, mobile app and AI development to help businesses grow faster."
+        keywords="CodeCPS Technologies, software development company, web development company, mobile app development, cloud solutions, AI automation, custom software development India, software company Greater Noida"
         path="/"
-        schema={[homeSchema, websiteSchema]}
+        schema={[organizationSchema, websiteSchema]}
       />
 
       <HeroSection />

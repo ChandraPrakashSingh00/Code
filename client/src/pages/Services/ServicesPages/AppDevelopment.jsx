@@ -289,7 +289,7 @@ function AppDevelopment() {
           provider: {
             "@type": "Organization",
             name: "CodeCPS Technologies",
-            url: "https://www.codecps.com/",
+            url: "https://www.codecpstechnologies.in/",
           },
           areaServed: "Worldwide",
           serviceType: "Mobile App Development",

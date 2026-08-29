@@ -144,8 +144,8 @@ function Products() {
           "@context": "https://schema.org",
           "@type": "BreadcrumbList",
           itemListElement: [
-            { "@type": "ListItem", position: 1, name: "Home", item: "https://www.codecps.com/" },
-            { "@type": "ListItem", position: 2, name: "Products", item: "https://www.codecps.com/product" },
+            { "@type": "ListItem", position: 1, name: "Home", item: "https://www.codecpstechnologies.in/" },
+            { "@type": "ListItem", position: 2, name: "Products", item: "https://www.codecpstechnologies.in/product" },
           ],
         }}
       />

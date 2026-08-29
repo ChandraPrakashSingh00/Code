@@ -325,7 +325,7 @@ function PerformanceSEOOptimization() {
           provider: {
             "@type": "Organization",
             name: "CodeCPS Technologies",
-            url: "https://www.codecps.com/",
+            url: "https://www.codecpstechnologies.in/",
           },
           description:
             "Website performance, speed and SEO optimization services for modern websites and digital products.",

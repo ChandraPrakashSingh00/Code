@@ -8,7 +8,8 @@ import {
   Send,
   CheckCircle2,
 } from "lucide-react";
-import SEO from "../../components/SEO/SEO";
+import SEO, { SITE_URL } from "../../components/SEO/SEO";
+import { COMPANY } from "../../data/companyInfo";
 
 /* ============================================================
    INSTAGRAM ICON
@@ -98,20 +99,25 @@ function Contact() {
         schema={{
           "@context": "https://schema.org",
           "@type": "LocalBusiness",
-          "@id": "https://www.codecpstechnologies.in/#localbusiness",
-          name: "CodeCPS Technologies",
-          image: "https://www.codecpstechnologies.in/logo.png",
-          url: "https://www.codecpstechnologies.in/",
-          telephone: "+91-8920480415",
-          email: "codecpstechnologies@gmail.com",
+          "@id": `${SITE_URL}/#localbusiness`,
+          name: COMPANY.legalName,
+          image: `${SITE_URL}/logo.png`,
+          url: `${SITE_URL}/`,
+          telephone: COMPANY.phone,
+          email: COMPANY.email,
           priceRange: "$$",
+          foundingDate: COMPANY.foundingDate,
+          founder: {
+            "@type": "Person",
+            name: COMPANY.founder.name,
+          },
           address: {
             "@type": "PostalAddress",
-            streetAddress: "14 Avenue, Gaur City 2, Near Brahma Mandir",
-            addressLocality: "Greater Noida West",
-            addressRegion: "Uttar Pradesh",
-            postalCode: "201009",
-            addressCountry: "IN",
+            streetAddress: COMPANY.address.streetAddress,
+            addressLocality: COMPANY.address.addressLocality,
+            addressRegion: COMPANY.address.addressRegion,
+            postalCode: COMPANY.address.postalCode,
+            addressCountry: COMPANY.address.addressCountry,
           },
         }}
       />

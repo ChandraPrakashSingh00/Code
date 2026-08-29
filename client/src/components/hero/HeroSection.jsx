@@ -1,4 +1,5 @@
 import { ArrowRight, Play } from "lucide-react";
+import { Link } from "react-router-dom";
 import HeroVisual from "./HeroVisual";
 import ReachOutSection from "./ReachOutSection";
 import "./hero.css";
@@ -248,10 +249,10 @@ function HeroSection() {
               </a>
 
 
-              {/* Watch Intro */}
+              {/* About Us */}
 
-              <a
-                href="#about"
+              <Link
+                to="/about"
                 className="
                   inline-flex
                   w-full
@@ -298,9 +299,9 @@ function HeroSection() {
                   />
                 </span>
 
-                Watch Intro
+                About Us
 
-              </a>
+              </Link>
 
             </div>
 

@@ -289,7 +289,7 @@ function DigitalMarketing() {
           provider: {
             "@type": "Organization",
             name: "CodeCPS Technologies",
-            url: "https://www.codecps.com/",
+            url: "https://www.codecpstechnologies.in/",
           },
           description:
             "Modern digital marketing services including SEO, paid advertising, social media marketing, lead generation and analytics.",

@@ -289,7 +289,7 @@ function CustomSoftware() {
           provider: {
             "@type": "Organization",
             name: "CodeCPS Technologies",
-            url: "https://www.codecps.com/",
+            url: "https://www.codecpstechnologies.in/",
           },
           description:
             "Custom software development solutions designed around business workflows, users and growth requirements.",

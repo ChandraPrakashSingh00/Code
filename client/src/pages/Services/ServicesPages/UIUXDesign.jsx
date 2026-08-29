@@ -286,7 +286,7 @@ function UIUXDesign() {
           provider: {
             "@type": "Organization",
             name: "CodeCPS Technologies",
-            url: "https://www.codecps.com/",
+            url: "https://www.codecpstechnologies.in/",
           },
           description:
             "Modern and user-centered UI/UX design services for websites, mobile apps and digital products.",
