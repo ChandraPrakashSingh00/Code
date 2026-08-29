@@ -24,7 +24,7 @@ const testimonials = [
   },
   {
     id: 2,
-    name: "Ankit Verma",
+    name: "Kshitij Kacker",
     role: "Founder",
     company: "Research Associate - IIT, Roorkee",
     image: "/testimonial/iit.jpg",
