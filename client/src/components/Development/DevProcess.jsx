@@ -1,235 +1,510 @@
 import React from "react";
-import { motion } from "framer-motion";
 import {
   Lightbulb,
+  ClipboardList,
   Palette,
   Code2,
   TestTube2,
   Rocket,
   Headphones,
-  ArrowRight,
 } from "lucide-react";
 
 const processSteps = [
   {
     number: "01",
     icon: Lightbulb,
-    title: "Discovery & Planning",
+    title: "Idea & Discovery",
     description:
-      "We understand your business, goals, target audience and project requirements to create a clear development roadmap.",
+      "Understanding your vision, goals and business challenges.",
   },
   {
     number: "02",
-    icon: Palette,
-    title: "UI/UX Design",
+    icon: ClipboardList,
+    title: "Requirement Analysis",
     description:
-      "Our designers create modern, intuitive and user-friendly interfaces that deliver a smooth digital experience.",
+      "Defining features, scope, users and project requirements.",
   },
   {
     number: "03",
-    icon: Code2,
-    title: "Development",
+    icon: Palette,
+    title: "UI/UX Design",
     description:
-      "Our developers turn the approved design into a fast, secure and scalable web or software solution.",
+      "Creating intuitive, modern and user-focused experiences.",
   },
   {
     number: "04",
-    icon: TestTube2,
-    title: "Testing & Quality",
+    icon: Code2,
+    title: "Product Development",
     description:
-      "We carefully test functionality, performance, responsiveness and security to ensure everything works perfectly.",
+      "Building scalable, secure and high-performance solutions.",
   },
   {
     number: "05",
-    icon: Rocket,
-    title: "Launch",
+    icon: TestTube2,
+    title: "Testing & Integration",
     description:
-      "Once everything is ready, we deploy your product and make sure it performs smoothly in the real world.",
+      "Testing features, integrations, security and performance.",
   },
   {
     number: "06",
-    icon: Headphones,
-    title: "Support & Growth",
+    icon: Rocket,
+    title: "Deployment",
     description:
-      "After launch, we provide ongoing support, maintenance and improvements to help your product grow.",
+      "Launching your application with an optimized production setup.",
+  },
+  {
+    number: "07",
+    icon: Headphones,
+    title: "Maintenance & Support",
+    description:
+      "Continuous updates, monitoring and technical assistance.",
   },
 ];
 
-const cardAnimation = {
-  hidden: {
-    opacity: 0,
-    y: 35,
-  },
-  show: {
-    opacity: 1,
-    y: 0,
-    transition: {
-      duration: 0.6,
-      ease: "easeOut",
-    },
-  },
-};
-
-export default function DevelopmentProcess() {
+const DevelopmentProcess = () => {
   return (
-    <section className="relative overflow-hidden bg-white py-24 md:py-32">
-
-      {/* Background Decorations */}
-      <div className="pointer-events-none absolute -left-32 top-20 h-72 w-72 rounded-full bg-blue-100/40 blur-3xl" />
-
-      <div className="pointer-events-none absolute -right-32 bottom-10 h-80 w-80 rounded-full bg-blue-50 blur-3xl" />
-
-      <div className="relative mx-auto max-w-7xl px-6">
+    <section className="relative overflow-hidden bg-[#191b1f] py-7 sm:py-9 lg:py-10">
+      <div className="relative mx-auto max-w-[1500px] px-5 sm:px-8 lg:px-10">
 
         {/* ================= HEADER ================= */}
+        <div className="mx-auto mb-7 max-w-3xl text-center sm:mb-9 lg:mb-10">
+          <div className="mb-2.5 inline-flex items-center gap-2 rounded-full border border-[#086ffd]/30 bg-[#086ffd]/10 px-3.5 py-1">
+            <span className="h-1.5 w-1.5 rounded-full bg-[#086ffd]" />
 
-        <motion.div
-          initial={{ opacity: 0, y: 25 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.7 }}
-          className="mx-auto max-w-3xl text-center"
-        >
-          <div className="mb-5 inline-flex items-center gap-2 rounded-full border border-blue-100 bg-blue-50 px-4 py-2 text-sm font-semibold text-[#086FFD]">
-            <span className="h-2 w-2 rounded-full bg-[#086FFD]" />
-            OUR DEVELOPMENT PROCESS
+            <span className="text-[10px] font-semibold uppercase tracking-[0.18em] text-[#086ffd] sm:text-[11px]">
+              How We Work
+            </span>
           </div>
 
-          <h2 className="text-4xl font-bold leading-tight tracking-tight text-[#191b1f] md:text-5xl lg:text-6xl">
-            From idea to
-            <span className="text-[#086FFD]"> digital success.</span>
+          <h2 className="text-2xl font-bold tracking-tight text-white sm:text-3xl lg:text-[40px]">
+            Our{" "}
+            <span className="text-[#086ffd]">
+              Development Process
+            </span>
           </h2>
 
-          <p className="mx-auto mt-6 max-w-2xl text-base leading-7 text-slate-500 md:text-lg">
-            We follow a structured and transparent development process to
-            transform your ideas into powerful, scalable and reliable digital
-            products.
+          <p className="mx-auto mt-2 max-w-2xl text-[11px] leading-5 text-white/45 sm:text-xs sm:leading-6">
+            From concept to launch, our structured process transforms ideas
+            into scalable, reliable and impactful digital solutions.
           </p>
-        </motion.div>
+        </div>
 
-        {/* ================= PROCESS ================= */}
+        {/* ================= DESKTOP TIMELINE ================= */}
+        <div className="hidden lg:block">
+          <div className="relative mx-auto min-h-[340px] w-full">
 
-        <div className="relative mt-16 md:mt-20">
+            {/* Timeline Line */}
+            <div
+              className="
+                absolute
+                left-[5%]
+                right-[5%]
+                top-1/2
+                z-0
+                h-[2px]
+                -translate-y-1/2
+                bg-white/10
+              "
+            />
 
-          {/* Connecting Line Desktop */}
-          <div className="absolute left-[8%] right-[8%] top-[55px] hidden h-px bg-slate-200 lg:block">
-            <div className="h-full w-1/2 bg-[#086FFD]" />
-          </div>
+            <div
+              className="
+                absolute
+                left-[5%]
+                right-[5%]
+                top-1/2
+                z-0
+                h-[2px]
+                -translate-y-1/2
+                bg-[#086ffd]/70
+              "
+            />
 
-          <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+            {/* Steps */}
+            <div className="relative z-10 grid min-h-[340px] grid-cols-7">
+              {processSteps.map((step, index) => {
+                const Icon = step.icon;
+                const isTop = index % 2 === 0;
 
-            {processSteps.map((step, index) => {
-              const Icon = step.icon;
+                return (
+                  <div
+                    key={step.number}
+                    className="group relative min-h-[340px]"
+                  >
 
-              return (
-                <motion.div
-                  key={step.number}
-                  variants={cardAnimation}
-                  initial="hidden"
-                  whileInView="show"
-                  viewport={{ once: true, margin: "-50px" }}
-                  transition={{
-                    delay: index * 0.1,
-                  }}
-                  className="group relative"
-                >
+                    {/* ================= TOP CONTENT ================= */}
+                    {isTop && (
+                      <div
+                        className="
+                          absolute
+                          bottom-[calc(50%+42px)]
+                          left-1/2
+                          w-[150px]
+                          -translate-x-1/2
+                          text-center
+                          xl:w-[170px]
+                        "
+                      >
+                        <span
+                          className="
+                            mb-1
+                            block
+                            text-[11px]
+                            font-bold
+                            tracking-[0.18em]
+                            text-[#086ffd]/80
+                            transition-colors
+                            duration-300
+                            group-hover:text-[#086ffd]
+                          "
+                        >
+                          {step.number}
+                        </span>
 
-                  {/* Card */}
+                        <h3
+                          className="
+                            text-[14px]
+                            font-bold
+                            leading-[18px]
+                            text-white
+                            transition-colors
+                            duration-300
+                            group-hover:text-[#086ffd]
+                            xl:text-[15px]
+                            xl:leading-5
+                          "
+                        >
+                          {step.title}
+                        </h3>
 
-                  <div className="relative h-full rounded-3xl border border-slate-200 bg-white p-7 shadow-sm transition-all duration-300 hover:-translate-y-2 hover:border-blue-200 hover:shadow-xl hover:shadow-blue-100/40">
+                        <p
+                          className="
+                            mt-1.5
+                            text-[9px]
+                            leading-[14px]
+                            text-white/45
+                            xl:text-[10px]
+                            xl:leading-[15px]
+                          "
+                        >
+                          {step.description}
+                        </p>
 
-                    {/* Number + Icon */}
-
-                    <div className="flex items-center justify-between">
-
-                      <span className="text-sm font-bold tracking-wider text-[#086FFD]">
-                        STEP {step.number}
-                      </span>
-
-                      <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-blue-50 text-[#086FFD] transition-all duration-300 group-hover:bg-[#086FFD] group-hover:text-white group-hover:shadow-lg group-hover:shadow-blue-200">
-                        <Icon size={26} />
+                        {/* Connector */}
+                        <div
+                          className="
+                            absolute
+                            -bottom-[42px]
+                            left-1/2
+                            h-[42px]
+                            w-px
+                            -translate-x-1/2
+                            bg-gradient-to-b
+                            from-transparent
+                            to-[#086ffd]
+                          "
+                        />
                       </div>
+                    )}
 
-                    </div>
+                    {/* ================= BOTTOM CONTENT ================= */}
+                    {!isTop && (
+                      <div
+                        className="
+                          absolute
+                          left-1/2
+                          top-[calc(50%+42px)]
+                          w-[150px]
+                          -translate-x-1/2
+                          text-center
+                          xl:w-[170px]
+                        "
+                      >
+                        {/* Connector */}
+                        <div
+                          className="
+                            absolute
+                            -top-[42px]
+                            left-1/2
+                            h-[42px]
+                            w-px
+                            -translate-x-1/2
+                            bg-gradient-to-b
+                            from-[#086ffd]
+                            to-transparent
+                          "
+                        />
 
-                    {/* Content */}
+                        <span
+                          className="
+                            mb-1
+                            block
+                            text-[11px]
+                            font-bold
+                            tracking-[0.18em]
+                            text-[#086ffd]/80
+                            transition-colors
+                            duration-300
+                            group-hover:text-[#086ffd]
+                          "
+                        >
+                          {step.number}
+                        </span>
 
-                    <h3 className="mt-8 text-xl font-bold text-[#191b1f]">
-                      {step.title}
-                    </h3>
+                        <h3
+                          className="
+                            text-[14px]
+                            font-bold
+                            leading-[18px]
+                            text-white
+                            transition-colors
+                            duration-300
+                            group-hover:text-[#086ffd]
+                            xl:text-[15px]
+                            xl:leading-5
+                          "
+                        >
+                          {step.title}
+                        </h3>
 
-                    <p className="mt-4 text-sm leading-7 text-slate-500">
-                      {step.description}
-                    </p>
+                        <p
+                          className="
+                            mt-1.5
+                            text-[9px]
+                            leading-[14px]
+                            text-white/45
+                            xl:text-[10px]
+                            xl:leading-[15px]
+                          "
+                        >
+                          {step.description}
+                        </p>
+                      </div>
+                    )}
 
-                    {/* Bottom Number */}
-
-                    <div className="mt-7 flex items-center justify-between border-t border-slate-100 pt-5">
-
-                      <span className="text-5xl font-black text-slate-100 transition-colors duration-300 group-hover:text-blue-50">
-                        {step.number}
-                      </span>
-
-                      <ArrowRight
-                        size={20}
-                        className="text-slate-300 transition-all duration-300 group-hover:translate-x-1 group-hover:text-[#086FFD]"
-                      />
-
+                    {/* ================= CENTER CIRCLE ================= */}
+                    <div
+                      className="
+                        absolute
+                        left-1/2
+                        top-1/2
+                        z-30
+                        -translate-x-1/2
+                        -translate-y-1/2
+                      "
+                    >
+                      <div
+                        className="
+                          flex
+                          h-[70px]
+                          w-[70px]
+                          items-center
+                          justify-center
+                          rounded-full
+                          border-2
+                          border-[#086ffd]/60
+                          bg-white
+                          transition-all
+                          duration-300
+                          group-hover:scale-110
+                          group-hover:border-[#086ffd]
+                          group-hover:bg-[#086ffd]
+                          group-hover:shadow-[0_0_25px_rgba(8,111,253,0.25)]
+                        "
+                      >
+                        <div
+                          className="
+                            flex
+                            h-[50px]
+                            w-[50px]
+                            items-center
+                            justify-center
+                            rounded-full
+                            border
+                            border-[#086ffd]/20
+                            bg-[#086ffd]/10
+                            transition-all
+                            duration-300
+                            group-hover:border-white/30
+                            group-hover:bg-white/10
+                          "
+                        >
+                          <Icon
+                            size={23}
+                            strokeWidth={1.7}
+                            className="
+                              text-[#086ffd]
+                              transition-all
+                              duration-300
+                              group-hover:scale-110
+                              group-hover:text-white
+                            "
+                          />
+                        </div>
+                      </div>
                     </div>
 
                   </div>
-
-                </motion.div>
-              );
-            })}
-
+                );
+              })}
+            </div>
           </div>
         </div>
 
-        {/* ================= BOTTOM CTA ================= */}
+        {/* ================= MOBILE / TABLET ================= */}
+        <div className="lg:hidden">
+          <div className="relative mx-auto max-w-2xl">
 
-        <motion.div
-          initial={{ opacity: 0, y: 30 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.7 }}
-          className="mt-16 rounded-3xl bg-[#191b1f] p-8 md:mt-20 md:p-10"
-        >
+            {/* Vertical Line */}
+            <div
+              className="
+                absolute
+                bottom-5
+                left-[29px]
+                top-5
+                w-[2px]
+                bg-gradient-to-b
+                from-transparent
+                via-[#086ffd]
+                to-transparent
+              "
+            />
 
-          <div className="flex flex-col items-center justify-between gap-6 md:flex-row">
+            <div className="space-y-3.5">
+              {processSteps.map((step) => {
+                const Icon = step.icon;
 
-            <div>
-              <p className="text-sm font-semibold uppercase tracking-wider text-[#4B9AFF]">
-                READY TO START?
-              </p>
+                return (
+                  <div
+                    key={step.number}
+                    className="group relative flex items-start gap-3.5"
+                  >
 
-              <h3 className="mt-2 text-2xl font-bold text-white md:text-3xl">
-                Let's build your next digital product.
-              </h3>
+                    {/* ================= MOBILE CIRCLE ================= */}
+                    <div
+                      className="
+                        relative
+                        z-10
+                        flex
+                        h-[58px]
+                        w-[58px]
+                        shrink-0
+                        items-center
+                        justify-center
+                        rounded-full
+                        border-2
+                        border-[#086ffd]/60
+                        bg-white
+                        transition-all
+                        duration-300
+                        group-hover:scale-105
+                        group-hover:border-[#086ffd]
+                        group-hover:bg-[#086ffd]
+                        group-hover:shadow-[0_0_20px_rgba(8,111,253,0.22)]
+                      "
+                    >
+                      <div
+                        className="
+                          flex
+                          h-[42px]
+                          w-[42px]
+                          items-center
+                          justify-center
+                          rounded-full
+                          bg-[#086ffd]/10
+                          transition-all
+                          duration-300
+                          group-hover:bg-white/10
+                        "
+                      >
+                        <Icon
+                          size={20}
+                          strokeWidth={1.8}
+                          className="
+                            text-[#086ffd]
+                            transition-all
+                            duration-300
+                            group-hover:scale-110
+                            group-hover:text-white
+                          "
+                        />
+                      </div>
 
-              <p className="mt-2 max-w-xl text-sm leading-6 text-slate-400">
-                Share your idea with us and our team will help you turn it
-                into a powerful digital solution.
-              </p>
+                      {/* Number */}
+                      <span
+                        className="
+                          absolute
+                          -right-1
+                          -top-1.5
+                          rounded-full
+                          border
+                          border-[#191b1f]
+                          bg-[#086ffd]
+                          px-1.5
+                          py-0.5
+                          text-[7px]
+                          font-bold
+                          text-white
+                        "
+                      >
+                        {step.number}
+                      </span>
+                    </div>
+
+                    {/* ================= MOBILE CONTENT ================= */}
+                    <div
+                      className="
+                        flex-1
+                        rounded-lg
+                        border
+                        border-white/10
+                        bg-white/[0.025]
+                        px-3.5
+                        py-3
+                        transition-all
+                        duration-300
+                        group-hover:border-[#086ffd]/30
+                        group-hover:bg-[#086ffd]/[0.035]
+                      "
+                    >
+                      <h3
+                        className="
+                          text-sm
+                          font-bold
+                          leading-5
+                          text-white
+                          transition-colors
+                          duration-300
+                          group-hover:text-[#086ffd]
+                          sm:text-base
+                        "
+                      >
+                        {step.title}
+                      </h3>
+
+                      <p
+                        className="
+                          mt-1
+                          text-[11px]
+                          leading-[18px]
+                          text-white/45
+                          sm:text-xs
+                        "
+                      >
+                        {step.description}
+                      </p>
+                    </div>
+
+                  </div>
+                );
+              })}
             </div>
-
-            <a
-              href="/contact"
-              className="group inline-flex shrink-0 items-center gap-2 rounded-xl bg-[#086FFD] px-6 py-3.5 font-semibold text-white transition-all duration-300 hover:-translate-y-1 hover:bg-[#0447D2] hover:shadow-lg hover:shadow-blue-500/20"
-            >
-              Start Your Project
-
-              <ArrowRight
-                size={18}
-                className="transition-transform duration-300 group-hover:translate-x-1"
-              />
-            </a>
-
           </div>
-
-        </motion.div>
+        </div>
 
       </div>
     </section>
   );
-}
+};
+
+export default DevelopmentProcess;

@@ -2,8 +2,9 @@ import { HeroSection } from "../../components/hero";
 import { TechStatsSection } from "../../components/tech-stats";
 import { ServicesSection } from "../../components/services";
 import FAQSection from "../../components/faq/FAQSection";
-// import DevProcess from "../../components/Development/DevProcess"
 import Testimonials from "../../components/Testimonial/Testimonial";
+import WhyChooseMe from "../../components/WhyChooseMe/WhyChooseMe";
+import DevProcess from "../../components/Development/DevProcess";
 
 import SEO from "../../components/SEO/SEO";
 import { organizationSchema, websiteSchema } from "../../data/organizationSchema";
@@ -22,9 +23,9 @@ function HomePage() {
       <HeroSection />
       <TechStatsSection />
       <ServicesSection />
-      {/* <DevProcess/> */}
       <Testimonials/>
-      
+      <WhyChooseMe/>
+      <DevProcess/>
       <FAQSection />
      
     </>

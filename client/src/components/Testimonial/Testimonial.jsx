@@ -58,9 +58,7 @@ function TypingText({ text }) {
   }, [text]);
 
   useEffect(() => {
-    if (index >= text.length) {
-      return undefined;
-    }
+    if (index >= text.length) return;
 
     const timer = window.setTimeout(() => {
       setDisplayText((previous) => previous + text[index]);
@@ -109,8 +107,10 @@ function ProfileImage({ item, small = false }) {
       className={
         small
           ? `
-            h-6
-            w-6
+            relative
+            h-7
+            w-7
+            shrink-0
             overflow-hidden
             rounded-full
             border-2
@@ -119,12 +119,17 @@ function ProfileImage({ item, small = false }) {
           `
           : `
             relative
-            h-11
-            w-11
+            flex
+            h-12
+            w-12
             shrink-0
+            items-center
+            justify-center
             overflow-hidden
             rounded-full
-            bg-[#086FFD]/10
+            border
+            border-[#086FFD]/15
+            bg-[#086FFD]/5
             ring-2
             ring-[#086FFD]/10
           `
@@ -135,16 +140,15 @@ function ProfileImage({ item, small = false }) {
           src={item.image}
           alt={`${item.name} profile`}
           loading="lazy"
+          className="
+            h-full
+            w-full
+            object-contain
+            object-center
+          "
           onError={(event) => {
             event.currentTarget.style.display = "none";
           }}
-          className="
-            block
-            h-full
-            w-full
-            object-cover
-            object-center
-          "
         />
       ) : (
         <div
@@ -184,6 +188,7 @@ function Rating({ rating = 5 }) {
           key={index}
           size={13}
           fill={index < safeRating ? "currentColor" : "none"}
+          strokeWidth={1.8}
           className="text-[#086FFD]"
         />
       ))}
@@ -193,7 +198,7 @@ function Rating({ rating = 5 }) {
           ml-1
           text-[10px]
           font-semibold
-          text-[#191b1f]/35
+          text-white/35
         "
       >
         {safeRating.toFixed(1)}
@@ -211,7 +216,7 @@ function TestimonialCard({ item, index }) {
     <motion.article
       initial={{
         opacity: 0,
-        y: 20,
+        y: 18,
       }}
       whileInView={{
         opacity: 1,
@@ -219,32 +224,34 @@ function TestimonialCard({ item, index }) {
       }}
       viewport={{
         once: true,
-        amount: 0.2,
+        amount: 0.15,
       }}
       transition={{
         duration: 0.5,
         delay: index * 0.08,
       }}
-      className="group relative w-full"
+      className="group flex h-full w-full"
     >
       <div
         className="
           relative
           flex
+          h-full
           min-h-[245px]
+          w-full
           flex-col
           overflow-hidden
-          rounded-[24px]
+          rounded-[22px]
           border
-          border-[#191b1f]/10
+          border-white/10
           bg-white
           p-5
-          shadow-[0_12px_40px_rgba(15,23,42,0.08)]
+          shadow-[0_10px_35px_rgba(15,23,42,0.08)]
           transition-all
           duration-300
           group-hover:-translate-y-1
           group-hover:border-[#086FFD]/25
-          group-hover:shadow-[0_18px_45px_rgba(8,111,253,0.12)]
+          group-hover:shadow-[0_18px_42px_rgba(8,111,253,0.12)]
           sm:p-6
         "
       >
@@ -252,8 +259,9 @@ function TestimonialCard({ item, index }) {
             TOP USER
         ================================================== */}
 
-        <div className="flex items-center justify-between gap-4">
+        <div className="flex items-center justify-between gap-3">
           <div className="flex min-w-0 items-center gap-3">
+            {/* FIXED PROFILE IMAGE */}
             <ProfileImage item={item} />
 
             <div className="min-w-0">
@@ -282,7 +290,7 @@ function TestimonialCard({ item, index }) {
             </div>
           </div>
 
-          {/* QUOTE */}
+          {/* QUOTE ICON */}
 
           <div
             className="
@@ -293,7 +301,7 @@ function TestimonialCard({ item, index }) {
               items-center
               justify-center
               rounded-xl
-              bg-[#086FFD]/10
+              bg-[#086FFD]/8
               text-[#086FFD]
               transition-all
               duration-300
@@ -301,7 +309,10 @@ function TestimonialCard({ item, index }) {
               group-hover:text-white
             "
           >
-            <Quote size={16} />
+            <Quote
+              size={16}
+              strokeWidth={1.8}
+            />
           </div>
         </div>
 
@@ -410,14 +421,14 @@ export default function Testimonials() {
         relative
         overflow-hidden
         bg-[#191b1f]
-        py-12
-        sm:py-14
-        md:py-16
-        lg:py-[72px]
+        py-10
+        sm:py-12
+        md:py-14
+        lg:py-16
       "
     >
       {/* ======================================================
-          BACKGROUND GLOW
+          SUBTLE BACKGROUND GLOW
       ====================================================== */}
 
       <div
@@ -425,12 +436,12 @@ export default function Testimonials() {
         className="
           pointer-events-none
           absolute
-          -left-32
-          top-10
+          -left-40
+          top-20
           h-64
           w-64
           rounded-full
-          bg-[#086FFD]/[0.06]
+          bg-[#086FFD]/[0.035]
           blur-3xl
         "
       />
@@ -440,12 +451,12 @@ export default function Testimonials() {
         className="
           pointer-events-none
           absolute
-          -right-32
-          bottom-0
+          -right-40
+          bottom-10
           h-64
           w-64
           rounded-full
-          bg-[#086FFD]/[0.06]
+          bg-[#086FFD]/[0.035]
           blur-3xl
         "
       />
@@ -471,7 +482,7 @@ export default function Testimonials() {
         <motion.div
           initial={{
             opacity: 0,
-            y: 20,
+            y: 18,
           }}
           whileInView={{
             opacity: 1,
@@ -481,7 +492,7 @@ export default function Testimonials() {
             once: true,
           }}
           transition={{
-            duration: 0.55,
+            duration: 0.5,
           }}
           className="mx-auto max-w-2xl text-center"
         >
@@ -505,7 +516,7 @@ export default function Testimonials() {
               text-[#4B9AFF]
             "
           >
-            <Sparkles size={13} />
+            <Sparkles size={12} />
             CLIENT STORIES
           </div>
 
@@ -519,17 +530,12 @@ export default function Testimonials() {
               tracking-tight
               text-white
               sm:text-4xl
-              md:text-[44px]
+              md:text-[42px]
             "
           >
             Loved by businesses.
 
-            <span
-              className="
-                block
-                text-[#086FFD]
-              "
-            >
+            <span className="block text-[#086FFD]">
               Trusted by clients.
             </span>
           </h2>
@@ -543,8 +549,9 @@ export default function Testimonials() {
               max-w-xl
               text-[11px]
               leading-5
-              text-slate-400
+              text-white/45
               sm:text-xs
+              sm:leading-6
               md:text-sm
             "
           >
@@ -560,10 +567,12 @@ export default function Testimonials() {
 
         <div
           className="
-            mt-8
+            mt-7
             grid
             grid-cols-1
+            items-stretch
             gap-4
+            sm:mt-8
             sm:grid-cols-2
             lg:grid-cols-3
           "
@@ -595,9 +604,9 @@ export default function Testimonials() {
           }}
           transition={{
             delay: 0.15,
-            duration: 0.45,
+            duration: 0.4,
           }}
-          className="mt-6 flex justify-center"
+          className="mt-5 flex justify-center"
         >
           <div
             className="
@@ -607,12 +616,12 @@ export default function Testimonials() {
               rounded-full
               border
               border-white/10
-              bg-white/[0.035]
+              bg-white
               px-4
               py-2
             "
           >
-            {/* SMALL AVATARS */}
+            {/* AVATARS */}
 
             <div className="flex -space-x-2">
               {testimonials.map((item) => (
@@ -626,13 +635,14 @@ export default function Testimonials() {
 
             {/* RATING */}
 
-            <div className="border-l border-white/10 pl-3">
+            <div className="border-l border-white pl-3">
               <div className="flex items-center gap-1">
                 {Array.from({ length: 5 }).map((_, index) => (
                   <Star
                     key={index}
                     size={11}
                     fill="currentColor"
+                    strokeWidth={1.5}
                     className="text-[#086FFD]"
                   />
                 ))}
@@ -643,7 +653,7 @@ export default function Testimonials() {
                   mt-0.5
                   text-[9px]
                   font-medium
-                  text-slate-500
+                  text-black/45
                 "
               >
                 Trusted by growing businesses
